@@ -4,7 +4,7 @@
 
 ### One-sentence description of the project
 
-TODO: A 20-second elevator pitch of your project - its core idea summarized in one sentence.
+A reinforcement machine learning agent designed to complete a video game in the godot engine and a game to be used the next year.
 
 ### Additional information about the project
 
