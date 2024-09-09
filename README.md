@@ -8,7 +8,7 @@ A reinforcement machine learning agent designed to complete a video game in the 
 
 ### Additional information about the project
 
-TODO: Write a compelling/creative/informative project description / summary
+This project aims to introduce K-12 students to the concepts of Reinforcement Machine Learning (RML). Our team is tasked with designing an agent for the current draft game and providing supporting documentation for students, along with a feedback document for the results of a trial event in December. Each team member will also design a new game for the following year, exploring different genres to show the diverse range of RML agents. Through this, students will gain foundational knowledge on Machine Learning and AI, preparing them for future challenges in a technology-driven world.
 
 ## Installation
 
