@@ -1,49 +1,57 @@
-Project Name: [Capstone Project Title]
-Client Name: [Client's Name/Organization]
-Date: [DD/MM/YYYY]
-Time: [Start Time – End Time]
-Location: [Meeting Venue/Online Platform]
+Project Name: RML Godot Agent
+Client Name: Ron Wright
+Date: 09/20/2024
+Time: 3:30 - 4:24
+Location: Online platform (Discord)
 Attendees:
 
-[Client Representative Name(s)]
-[Project Team Member 1]
-[Project Team Member 2]
-[Project Supervisor/Advisor, if applicable]
-1. Agenda
-[State the key discussion points of the meeting]
-[Example: Introduction to the project, gathering requirements, timeline discussion, feedback on prototypes, etc.]
-2. Meeting Summary
-Introduction:
+Ron Wright
+Cole Clark
+Luke Flock
 
-Brief introduction by the project team and client.
-Overview of the project goals, scope, and key stakeholders.
+1. Agenda
+
+How students should use ChatGPT in projects
+advice for using ChatGPT
+event description and rules
+specifics on our requirements
+
+2. Meeting Summary
+
 Client’s Requirements:
 
-Detailed explanation of the client's requirements.
-Discussion on specific features and functionalities expected by the client.
-Clarifications on any ambiguities in the project scope.
+  client needs two RML agents
+  One should be Monte Carlo algorithm
+  The other should NOT be Q algorithm
+
 Key Discussion Points:
 
-[Discussion Point 1: Example, Prototype feedback from the client]
-[Discussion Point 2: Example, Project timeline adjustments]
-[Discussion Point 3: Example, Any technical challenges discussed]
+  [Discussion point 1: How students should use ChatGPT in projects]
+  [Discussion point 2: advice for using ChatGPT]
+  [Discussion point 3: event description and rules]
+  [Discussion point 4: specifics on our requirements]
+
 Decisions Made:
 
-[Example: Agreement on the use of specific technology stack]
-[Example: Client approval of design mockups]
+[Decided to create 2 RML algorithms for the game]
+[One will use the Monte Carlo algorithm]
+[The other will NOT use the Q algorithm]
+
 Action Items:
 
-[Action Item 1: Example, Project team to revise wireframes based on client feedback – Due by DD/MM/YYYY]
-[Action Item 2: Example, Client to provide further details on data requirements – Due by DD/MM/YYYY]
+[Action Item 1: Send response from ChatGPT for how to use ChatGPT – Due by 09/20/2024]
+[Action Item 2: Create plans for algorithms – Due by 05/10/2024]
+
 3. Project Milestones Discussed
-[Example: Initial prototype to be delivered by DD/MM/YYYY]
-[Example: User testing phase to be completed by DD/MM/YYYY]
+[Action Item 2: Create plans for algorithms – Due by 05/10/2024]
+
 4. Next Steps
-[Example: Schedule next meeting for review of updated designs]
-[Example: Finalize implementation details in the next meeting]
+[Meet with Ron (Client) on Friday 09/27/2024]
+[Meet with Professor Kumar on Tuesday 09/24/2024]
+
 5. Next Meeting
-Date: [Proposed date for next meeting]
-Time: [Proposed time for next meeting]
-Location: [Proposed location/online platform]
-Meeting Notes Prepared By: [Your Name]
-Date: [DD/MM/YYYY]
+Date: 09/27/2024
+Time: 3:00 PM
+Location: Online platform (Discord)
+Meeting Notes Prepared By: Cole Clark
+Date: 09/20/2024
