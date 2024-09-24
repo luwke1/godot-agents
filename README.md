@@ -1,4 +1,4 @@
-# godotgame
+# godot-rl
 
 ## Project summary
 
