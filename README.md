@@ -1,4 +1,4 @@
-# godot-rl
+# godot-agents
 
 ## Project summary
 
