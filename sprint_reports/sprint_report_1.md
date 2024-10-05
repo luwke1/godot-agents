@@ -21,6 +21,9 @@ Here are links to the issues that we completed in this sprint:
  * [Requirements and Specifications](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82034583)
  * [Simplified Monte Carlo Algorithm](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82033188)
  * [client documentation - Monte Carlo description](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82261972)
+
+   Cole: 18.5 story points
+   Luke: 20.5 story points
  
  ## Incomplete Issues/User Stories
  Here are links to issues we worked on but did not complete in this sprint:
