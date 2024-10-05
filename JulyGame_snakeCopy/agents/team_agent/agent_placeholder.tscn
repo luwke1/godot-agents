@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://crw8rhwp5nu6v"]
+
+[ext_resource type="Script" path="res://agents/team_agent/agent_placeholder.gd" id="1_x81v3"]
+
+[node name="AgentPlaceholder" type="Node2D"]
+script = ExtResource("1_x81v3")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 49.0
+offset_top = 27.0
+offset_right = 359.0
+offset_bottom = 232.0
+scale = Vector2(2, 2)
+text = "Placeholder 
+
+This needs to be repalced 
+with your actual Agent 
+running. 
+
+Press \"p' to return 
+to the main menu. "

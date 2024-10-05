@@ -1,0 +1,60 @@
+[gd_scene load_steps=6 format=3 uid="uid://omf4jaabyly6"]
+
+[ext_resource type="Script" path="res://common/safe_landing.gd" id="1_la14a"]
+[ext_resource type="PackedScene" uid="uid://3yv0615jxmbn" path="res://common/explosion.tscn" id="2_l0let"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_weyg6"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_0klm8"]
+sky_material = SubResource("ProceduralSkyMaterial_weyg6")
+
+[sub_resource type="Environment" id="Environment_xao3b"]
+background_mode = 2
+sky = SubResource("Sky_0klm8")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="safe_landing" type="Node3D"]
+script = ExtResource("1_la14a")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_xao3b")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Explosion" parent="." instance=ExtResource("2_l0let")]
+transform = Transform3D(0.397388, -0.917651, 0, 0.917651, 0.397388, 0, 0, 0, 1, 0, 0.24203, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.0398465, 0.693964, -0.718907, 0.0638413, 0.719776, 0.691265, 0.997164, -0.0183514, -0.0729841, -0.793201, 0.80047, -0.0269868)
+
+[node name="SafeLandingNote" type="Label" parent="."]
+offset_left = 223.0
+offset_top = 67.0
+offset_right = 633.0
+offset_bottom = 350.0
+scale = Vector2(1.73186, 1.73186)
+text = "
+
+Most Excellent !!! 
+
+You have safely landed
+"
+horizontal_alignment = 1
+
+[node name="Back" type="Button" parent="."]
+anchors_preset = -1
+anchor_left = 0.023
+anchor_top = 0.008
+anchor_right = 0.023
+anchor_bottom = 0.008
+offset_left = -4.496
+offset_top = 4.816
+offset_right = 3.504
+offset_bottom = 12.816
+scale = Vector2(2.15885, 1.04974)
+text = "\"p\"  == Back"

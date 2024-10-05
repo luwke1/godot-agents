@@ -1,0 +1,85 @@
+[gd_scene load_steps=12 format=3 uid="uid://3yv0615jxmbn"]
+
+[ext_resource type="AudioStream" uid="uid://coofu8vr6ekn3" path="res://common/Kaboom.mp3" id="1_rd211"]
+
+[sub_resource type="Curve" id="Curve_prndc"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.506198, 1), 0.0, 0.0, 0, 0, Vector2(0.977273, 0.018868), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_s4374"]
+curve = SubResource("Curve_prndc")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_tgx8r"]
+particle_flag_align_y = true
+spread = 71.932
+initial_velocity_min = 12.0
+initial_velocity_max = 14.0
+scale_min = 0.5
+scale_max = 1.5
+scale_curve = SubResource("CurveTexture_s4374")
+hue_variation_min = -0.53
+hue_variation_max = 0.44
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qrdef"]
+albedo_color = Color(0.976471, 0.34902, 0, 1)
+metallic = 0.5
+emission_enabled = true
+emission = Color(0.937255, 0.372549, 0, 1)
+emission_energy_multiplier = 3.88
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_qdtqm"]
+material = SubResource("StandardMaterial3D_qrdef")
+top_radius = 0.1
+bottom_radius = 0.0
+
+[sub_resource type="Curve" id="Curve_ywgok"]
+_data = [Vector2(0.018595, 0.154717), 0.0, 0.0, 0, 0, Vector2(0.28719, 1), 0.0, 0.0, 0, 0, Vector2(0.956612, 0.139623), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_cbtai"]
+curve = SubResource("Curve_ywgok")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_5b851"]
+emission_shape = 1
+emission_sphere_radius = 1.0
+direction = Vector3(1, -1, 0)
+spread = 139.091
+scale_min = 0.5
+scale_max = 1.5
+scale_curve = SubResource("CurveTexture_cbtai")
+color = Color(0.288051, 0.108973, 0.114516, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h16vt"]
+albedo_color = Color(0.0735048, 0.224877, 0.106519, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_3g8k4"]
+material = SubResource("StandardMaterial3D_h16vt")
+radial_segments = 8
+rings = 4
+
+[node name="Explosion" type="Node3D"]
+transform = Transform3D(-0.324314, 0.94595, 0, -0.94595, -0.324314, 0, 0, 0, 1, 0, 0.24203, 0)
+
+[node name="Fire" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 24
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_tgx8r")
+draw_pass_1 = SubResource("CylinderMesh_qdtqm")
+
+[node name="Kaboom1" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("1_rd211")
+volume_db = 10.0
+
+[node name="Smoke" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.194296, 0.132864, 0.0950513)
+emitting = false
+amount = 40
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_5b851")
+draw_pass_1 = SubResource("SphereMesh_3g8k4")

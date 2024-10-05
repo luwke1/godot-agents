@@ -1,0 +1,81 @@
+[gd_scene load_steps=3 format=3 uid="uid://dntqp66lwbjwf"]
+
+[ext_resource type="Script" path="res://starting_folder/main_menu.gd" id="1_3xn34"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_68th8"]
+
+[node name="main_menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 33.0
+offset_top = 18.0
+offset_right = 33.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3xn34")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_top = 70.0
+offset_right = 206.0
+offset_bottom = 356.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="help" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Help"
+
+[node name="Run Agent" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Run RML Agent"
+
+[node name="Run Function Agent" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Run Function Agent"
+
+[node name="play_menu" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+action_mode = 0
+text = "Play Game"
+
+[node name="Quit" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Quit Game"
+
+[node name="Draft_number" type="Label" parent="."]
+top_level = true
+material = SubResource("CanvasItemMaterial_68th8")
+layout_mode = 0
+offset_left = 1005.0
+offset_top = 533.0
+offset_right = 1133.0
+offset_bottom = 629.0
+mouse_filter = 1
+theme_override_colors/font_color = Color(0.840147, 0.512588, 0.925764, 1)
+text = "Draft 2.2.4
+9/15/2024
+w7eryron    "
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 211.0
+offset_top = 27.0
+offset_right = 425.0
+offset_bottom = 175.0
+scale = Vector2(4, 4)
+text = "Snake Game 
+but with no tail ...
+... or ... 
+Pacman without enemies 
+and without walls. "
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/help" to="." method="_on_help_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Run Agent" to="." method="_on_run_agent_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Run Function Agent" to="." method="_on_run_function_agent_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/play_menu" to="." method="_on_play_menu_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]

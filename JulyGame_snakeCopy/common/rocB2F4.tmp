@@ -1,0 +1,241 @@
+[gd_scene load_steps=19 format=3 uid="uid://cd4gl7geyv4o1"]
+
+[ext_resource type="Script" path="res://common/rocket.gd" id="1_a67mg"]
+[ext_resource type="AudioStream" uid="uid://coofu8vr6ekn3" path="res://common/Kaboom.mp3" id="3_6v3rg"]
+[ext_resource type="Texture2D" uid="uid://cgncjkx3u8l87" path="res://starting_folder/icon.svg" id="3_pnct2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6om5j"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_2iqvx"]
+material = SubResource("StandardMaterial3D_6om5j")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_im5s2"]
+radius = 1.0
+
+[sub_resource type="Curve" id="Curve_0h4uw"]
+_data = [Vector2(0.018595, 0.154717), 0.0, 0.0, 0, 0, Vector2(0.28719, 1), 0.0, 0.0, 0, 0, Vector2(0.956612, 0.139623), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_sq4ce"]
+curve = SubResource("Curve_0h4uw")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7tv8h"]
+emission_shape = 1
+emission_sphere_radius = 1.0
+direction = Vector3(1, -1, 0)
+spread = 139.091
+scale_min = 0.5
+scale_max = 1.5
+scale_curve = SubResource("CurveTexture_sq4ce")
+color = Color(0.288051, 0.108973, 0.114516, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o16a0"]
+albedo_color = Color(0.0735048, 0.224877, 0.106519, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_d2igj"]
+material = SubResource("StandardMaterial3D_o16a0")
+radial_segments = 8
+rings = 4
+
+[sub_resource type="Curve" id="Curve_jf2kt"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.506198, 1), 0.0, 0.0, 0, 0, Vector2(0.977273, 0.018868), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_pd3io"]
+curve = SubResource("Curve_jf2kt")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_50dt3"]
+particle_flag_align_y = true
+spread = 71.932
+initial_velocity_min = 12.0
+initial_velocity_max = 14.0
+scale_min = 0.5
+scale_max = 1.5
+scale_curve = SubResource("CurveTexture_pd3io")
+hue_variation_min = -0.53
+hue_variation_max = 0.44
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_co4uu"]
+albedo_color = Color(0.976471, 0.34902, 0, 1)
+metallic = 0.5
+emission_enabled = true
+emission = Color(0.937255, 0.372549, 0, 1)
+emission_energy_multiplier = 3.88
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_v7p2b"]
+material = SubResource("StandardMaterial3D_co4uu")
+top_radius = 0.1
+bottom_radius = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_mph02"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mrvft"]
+albedo_texture = ExtResource("3_pnct2")
+
+[node name="rocket" type="RigidBody3D"]
+disable_mode = 2
+lock_rotation = true
+max_contacts_reported = 9
+script = ExtResource("1_a67mg")
+
+[node name="tower" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.410037, 0, 0, 0, 0.834214, 0, 0, 0, 0.496786, 0, 1.01848, 0)
+mesh = SubResource("CylinderMesh_2iqvx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -0.022, 0.7, 0)
+shape = SubResource("SphereShape3D_im5s2")
+
+[node name="plate" type="MeshInstance3D" parent="."]
+transform = Transform3D(2.01766, 0, 0, 0, 0.158405, 0, 0, 0, 2.01461, 0.0193877, 0.346167, -0.0195595)
+mesh = SubResource("CylinderMesh_2iqvx")
+
+[node name="Kaboom1" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_6v3rg")
+volume_db = 10.0
+
+[node name="Smoke" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00960718, -0.528247, 0.123456)
+emitting = false
+amount = 40
+amount_ratio = 0.8937
+lifetime = 0.99
+one_shot = true
+explosiveness = 1.0
+randomness = 0.44
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_7tv8h")
+draw_pass_1 = SubResource("SphereMesh_d2igj")
+
+[node name="Fire" type="GPUParticles3D" parent="."]
+transform = Transform3D(-0.13406, 0.977425, -0.163308, -0.983946, -0.111698, 0.139192, 0.117808, 0.179346, 0.976707, 0.016627, 0.0463922, -0.422876)
+emitting = false
+amount = 24
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_50dt3")
+draw_pass_1 = SubResource("CylinderMesh_v7p2b")
+
+[node name="TwistPvot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="PitchPivot" type="Node3D" parent="TwistPvot"]
+transform = Transform3D(0.999701, -0.0171452, 0.0174498, 0.0174497, 0.999696, -0.0174524, -0.0171452, 0.0177517, 0.999696, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="TwistPvot/PitchPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.342, 3.94)
+
+[node name="pilot_chair_front" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.735175, 0, 0, 0, 0.307907, 0, 0, 0, 0.615434, 0, 0.649384, -0.452976)
+mesh = SubResource("BoxMesh_mph02")
+surface_material_override/0 = SubResource("StandardMaterial3D_mrvft")
+
+[node name="speed_label" type="Label" parent="."]
+offset_left = 78.0
+offset_top = 410.975
+offset_right = 232.0
+offset_bottom = 433.975
+theme_override_colors/font_color = Color(0.6, 0, 0, 1)
+text = "Tank velocity  (x,y,z)"
+
+[node name="roll_label" type="Label" parent="."]
+offset_left = 80.0
+offset_top = 458.975
+offset_right = 255.0
+offset_bottom = 481.975
+theme_override_colors/font_color = Color(0.6, 0, 0, 1)
+text = "Turret angle (deg) "
+
+[node name="height_label" type="Label" parent="."]
+offset_left = 80.0
+offset_top = 362.975
+offset_right = 237.0
+offset_bottom = 385.975
+theme_override_colors/font_color = Color(0.6, 0, 0, 1)
+text = "Tank location (x,y,z) "
+
+[node name="distL_label" type="Label" parent="."]
+offset_left = 80.0
+offset_top = 276.975
+offset_right = 233.0
+offset_bottom = 299.975
+theme_override_colors/font_color = Color(0.6, 0, 0, 1)
+text = "Distance to landing "
+
+[node name="land_loc_label" type="Label" parent="."]
+offset_left = 81.0
+offset_top = 317.975
+offset_right = 234.0
+offset_bottom = 340.975
+theme_override_colors/font_color = Color(0.6, 0, 0, 1)
+text = "Landing location "
+
+[node name="bombs_label" type="Label" parent="."]
+offset_left = 84.0
+offset_top = 508.0
+offset_right = 237.0
+offset_bottom = 531.0
+theme_override_colors/font_color = Color(0.6, 0, 0, 1)
+text = "Bombs remaining"
+
+[node name="my_speed" type="Label" parent="."]
+offset_left = 241.0
+offset_top = 388.975
+offset_right = 281.0
+offset_bottom = 411.975
+rotation = -0.0129563
+scale = Vector2(1.88045, 2.65341)
+theme_override_colors/font_color = Color(0.796078, 0, 0, 1)
+text = "0"
+
+[node name="my_roll" type="Label" parent="."]
+offset_left = 241.0
+offset_top = 439.975
+offset_right = 281.0
+offset_bottom = 462.975
+rotation = -0.0129563
+scale = Vector2(1.88045, 2.65341)
+theme_override_colors/font_color = Color(0.796078, 0, 0, 1)
+text = "0"
+
+[node name="my_height" type="Label" parent="."]
+offset_left = 241.0
+offset_top = 340.975
+offset_right = 281.0
+offset_bottom = 363.975
+rotation = -0.0129563
+scale = Vector2(1.88045, 2.65341)
+theme_override_colors/font_color = Color(0.796078, 0, 0, 1)
+text = "0"
+
+[node name="my_distL" type="Label" parent="."]
+offset_left = 240.0
+offset_top = 258.975
+offset_right = 280.0
+offset_bottom = 281.975
+rotation = -0.0129563
+scale = Vector2(1.88045, 2.65341)
+theme_override_colors/font_color = Color(0.796078, 0, 0, 1)
+text = "0"
+
+[node name="land_location" type="Label" parent="."]
+offset_left = 239.0
+offset_top = 300.975
+offset_right = 279.0
+offset_bottom = 323.975
+rotation = -0.0129563
+scale = Vector2(1.88045, 2.65341)
+theme_override_colors/font_color = Color(0.796078, 0, 0, 1)
+text = "0"
+
+[node name="my_bombs" type="Label" parent="."]
+offset_left = 247.0
+offset_top = 485.0
+offset_right = 287.0
+offset_bottom = 508.0
+rotation = -0.0129563
+scale = Vector2(1.88045, 2.65341)
+theme_override_colors/font_color = Color(0.796078, 0, 0, 1)
+text = "0"
