@@ -14,10 +14,10 @@ We are currently missing a team member, so we were unable to complete an outline
 ## Completed Issues/User Stories
 Here are links to the issues that we completed in this sprint:
 
- * [URL of issue 1](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82255932)
- * [URL of issue 2](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82238359)
- * [URL of issue n](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82238108)
- * URL of issue
+ * [Simplified Policy Gradient algorithm plan](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82255932)
+ * [Learn Policy Gradient REINFORCE method](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82238359)
+ * [Learn Reinforcement Fundamentals](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82238108)
+ * []
 
  Reminders (Remove this section when you save the file):
   * Each issue should be assigned to a milestone
