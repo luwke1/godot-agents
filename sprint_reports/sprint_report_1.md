@@ -23,6 +23,7 @@ Here are links to the issues that we completed in this sprint:
  * [client documentation - Monte Carlo description](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82261972)
 
    Cole: 18.5 story points
+   
    Luke: 20.5 story points
  
  ## Incomplete Issues/User Stories
