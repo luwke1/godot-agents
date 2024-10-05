@@ -6,8 +6,7 @@
  * Feature n or Bug Fix n
 
 ## Work Summary (Developer Facing)
-The work done in Sprint 1 was majority just learning the algorithms, and learning the resources needed to implement them. 
-Provide a one paragraph synposis of what your team accomplished this sprint. Don't repeat the "What's New" list of features. Instead, help the instructor understand how you went about the work described there, any barriers you overcame, and any significant learnings for your team.
+In Sprint 1, our primary focus was on building foundational knowledge of reinforcement learning (RL) algorithms, specifically to prepare for the implementation of two RL agents: one using the policy gradient REINFORCE algorithm and another using Monte Carlo methods. The team spent significant time to researching RL concepts, exploring how to integrate these algorithms with Godot, and identifying the necessary libraries and resources for implementation. We faced a few barriers in the process, particularly in understanding the constraints of Godot’s engine for machine learning tasks, as it isn’t inherently built for integration with most reinforcement learning algorithms. This required us to explore potential workarounds, such as using external libraries (like TensorFlow or PyTorch) and finding ways to interface them with Godot. Another significant barrier that we overcame was understanding the challenges of connecting an RL agent with a game engine in real time, however, with significant learning in RL algorithms and the Godot game engine, we believe we are ready to start implementing these agents.
 
 ## Unfinished Work
 We are currently missing a team member, so we were unable to complete an outline and plan for a 3rd Reinforcement Learning Agent. Overall, everything else was completed for Sprint 1, and we are ready to begin on Sprint 2.
