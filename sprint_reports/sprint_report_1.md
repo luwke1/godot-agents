@@ -25,9 +25,9 @@ Here are links to the issues that we completed in this sprint:
  ## Incomplete Issues/User Stories
  Here are links to issues we worked on but did not complete in this sprint:
  
- * [Policy Gradient RL Agent Python Code](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82135261) <Not necessary for Sprint 1, only an outline and plan of agent required>
- * [Duncan RML agent simplified](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82033740&pane=issue&itemId=82261692) <Duncan did not contribute to this sprint>
- * [client documentation - Duncan RML algorithm](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82033740&pane=issue&itemId=82262011) <Duncan did not contribute to this sprint>
+ * [Policy Gradient RL Agent Python Code](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82135261) < Not necessary for Sprint 1, only an outline and plan of agent required >
+ * [Duncan RML agent simplified](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82033740&pane=issue&itemId=82261692) < Duncan did not contribute to this sprint >
+ * [client documentation - Duncan RML algorithm](https://github.com/users/luwke1/projects/2/views/1?pane=issue&itemId=82033740&pane=issue&itemId=82262011) < Duncan did not contribute to this sprint >
 
 ## Code Files for Review
 Please review the following code files, which were actively developed during this sprint, for quality:
