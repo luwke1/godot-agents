@@ -25,6 +25,8 @@ Here are links to the issues that we completed in this sprint:
    Cole: 18.5 story points
    
    Luke: 20.5 story points
+
+   Duncan: 0 story points
  
  ## Incomplete Issues/User Stories
  Here are links to issues we worked on but did not complete in this sprint:
