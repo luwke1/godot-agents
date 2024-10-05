@@ -1,4 +1,4 @@
-# Sprint x Report (8/26/21 - 9/24/2021)
+# Sprint 1 Report (8/26/24 - 10/5/2024)
 
 ## What's New (User Facing)
  * Feature 1 or Bug Fix 1
@@ -6,10 +6,11 @@
  * Feature n or Bug Fix n
 
 ## Work Summary (Developer Facing)
+The work done in Sprint 1 was majority just learning the algorithms, and learning the resources needed to implement them. 
 Provide a one paragraph synposis of what your team accomplished this sprint. Don't repeat the "What's New" list of features. Instead, help the instructor understand how you went about the work described there, any barriers you overcame, and any significant learnings for your team.
 
 ## Unfinished Work
-If applicable, explain the work you did not finish in this sprint. For issues/user stories in the current sprint that have not been closed, (a) any progress toward completion of the issues has been clearly tracked (by checking the checkboxes of  acceptance criteria), (b) a comment has been added to the issue to explain why the issue could not be completed (e.g., "we ran out of time" or "we did not anticipate it would be so much work"), and (c) the issue is added to a subsequent sprint, so that it can be addressed later.
+We are currently missing a team member, so we were unable to complete an outline and plan for a 3rd Reinforcement Learning Agent. Overall, everything else was completed for Sprint 1, and we are ready to begin on Sprint 2.
 
 ## Completed Issues/User Stories
 Here are links to the issues that we completed in this sprint:
