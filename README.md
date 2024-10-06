@@ -17,11 +17,30 @@ The first agent will utilize Monte Carlo techniques, and the second agent will u
 
 ### Prerequisites
 
-TODO: List what a user needs to have installed before running the installation instructions below (e.g., git, which versions of Ruby/Rails)
+Before starting, ensure the following software and libraries are installed on your machine:
 
-### Add-ons
+### 1. Godot Game Engine
+- **Version**: Godot 4.2 or higher
+- [Download Godot](https://godotengine.org/download)
+- Godot will serve as the platform where the agents interact with the game environment.
 
-TODO: List which add-ons are included in the project, and the purpose each add-on serves in your app.
+### 2. Python
+- **Version**: Python 3.7 or higher
+- [Download Python](https://www.python.org/downloads/)
+- Python will be used to implement and test the reinforcement learning algorithms before integration with Godot.
+
+### 3. TensorFlow or PyTorch
+- Choose either [TensorFlow 2.x](https://www.tensorflow.org/install) or [PyTorch 1.x](https://pytorch.org/get-started/locally) for building and training neural networks.
+  
+  - To install TensorFlow:
+    ```bash
+    pip install tensorflow
+    ```
+  - To install PyTorch:
+    ```bash
+    pip install torch
+    ```
+
 
 ### Installation Steps
 
@@ -40,16 +59,6 @@ and showcase your features.
 TODO: Describe any known issues, bugs, odd behaviors or code smells. 
 Provide steps to reproduce the problem and/or name a file or a function where the problem lives.
 
-
-## Contributing
-
-TODO: Leave the steps below if you want others to contribute to your project.
-
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
 
 ## Additional Documentation
 
