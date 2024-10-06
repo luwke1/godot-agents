@@ -42,11 +42,6 @@ Here are the future prerequisites that will be required to run our project.
     ```
 
 
-### Installation Steps
-
-We do not have any current installation steps since there is no code to run currently.
-
-
 ## Functionality
 
 You can run the current monte carlo python implementation by running the 'main.py' file in 'simplified_algorithms' folder
