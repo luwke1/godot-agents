@@ -17,7 +17,7 @@ The first agent will utilize Monte Carlo techniques, and the second agent will u
 
 ### Prerequisites
 
-Before starting, ensure the following software and libraries are installed on your machine:
+Here are the future prerequisites that will be required to run our project.
 
 ### 1. Godot Game Engine
 - **Version**: Godot 4.2 or higher
@@ -44,27 +44,22 @@ Before starting, ensure the following software and libraries are installed on yo
 
 ### Installation Steps
 
-TODO: Describe the installation process (making sure you mention `bundle install`).
-Instructions need to be such that a user can just copy/paste the commands to get things set up and running. 
+We do not have any current installation steps since there is no code to run currently.
 
 
 ## Functionality
 
-TODO: Write usage instructions. Structuring it as a walkthrough can help structure this section,
-and showcase your features.
+Functionality is not implemented yet.
 
-
-## Known Problems
-
-TODO: Describe any known issues, bugs, odd behaviors or code smells. 
-Provide steps to reproduce the problem and/or name a file or a function where the problem lives.
 
 
 ## Additional Documentation
 
-TODO: Provide links to additional documentation that may exist in the repo, e.g.,
-  * Sprint reports
-  * User links
+Links to additional documentation that may exist in the repo, e.g.,
+  * [Sprint reports](https://github.com/luwke1/godot-agents/blob/3494a113362c707e003035cf26cbd5e27b47e756/sprint_reports/sprint_report_1.md)
+  * [Sprint 1 Demo Video](https://youtu.be/SGdJZU3_xYI?si=VPmMmzRrqxQv_Naq)
+  * [Tool to download parts of repo](https://download-directory.github.io/)
+
 
 
 ## License
