@@ -55,7 +55,7 @@ You can run the current monte carlo python implementation by running the 'main.p
 
 ## Additional Documentation
 
-Links to additional documentation that may exist in the repo, e.g.,
+Links to additional documentation:
   * [Sprint reports](https://github.com/luwke1/godot-agents/blob/3494a113362c707e003035cf26cbd5e27b47e756/sprint_reports/sprint_report_1.md)
   * [Sprint 1 Demo Video](https://youtu.be/SGdJZU3_xYI?si=VPmMmzRrqxQv_Naq)
   * [Tool to download parts of repo](https://download-directory.github.io/)
