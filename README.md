@@ -49,7 +49,7 @@ We do not have any current installation steps since there is no code to run curr
 
 ## Functionality
 
-Functionality is not implemented yet.
+You can run the current monte carlo python implementation by running the 'main.py' file in 'simplified_algorithms' folder
 
 
 
@@ -59,6 +59,8 @@ Links to additional documentation that may exist in the repo, e.g.,
   * [Sprint reports](https://github.com/luwke1/godot-agents/blob/3494a113362c707e003035cf26cbd5e27b47e756/sprint_reports/sprint_report_1.md)
   * [Sprint 1 Demo Video](https://youtu.be/SGdJZU3_xYI?si=VPmMmzRrqxQv_Naq)
   * [Tool to download parts of repo](https://download-directory.github.io/)
+  * [Monte Carlo Algorithm Plan](https://github.com/luwke1/godot-agents/blob/1aa3249474b57a4cf5946ac0ab5104ab33a1ddd6/simplified_algorithms/Monte%20Carlo%20algorithm.pdf)
+  * [Policy Gradient RL Algorithm Plan](https://github.com/luwke1/godot-agents/blob/1aa3249474b57a4cf5946ac0ab5104ab33a1ddd6/simplified_algorithms/Policy%20Gradient%20RL%20Agent%20Plan%20(1).pdf)
 
 
 
