@@ -11,6 +11,10 @@ In Sprint 1, our primary focus was on building foundational knowledge of reinfor
 ## Unfinished Work
 We are currently missing a team member, so we were unable to complete an outline and plan for a 3rd Reinforcement Learning Agent. Overall, everything else was completed for Sprint 1, and we are ready to begin on Sprint 2.
 
+## Sprint Video
+
+Youtube Link: https://youtu.be/SGdJZU3_xYI
+
 ## Completed Issues/User Stories
 Here are links to the issues that we completed in this sprint:
 
