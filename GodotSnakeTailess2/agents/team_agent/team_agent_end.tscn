@@ -1,6 +1,5 @@
-[gd_scene load_steps=3 format=3 uid="uid://dxl4bvkbogaw8"]
+[gd_scene load_steps=2 format=3 uid="uid://dxl4bvkbogaw8"]
 
-[ext_resource type="Script" path="res://agents/team_agent/Label.gd" id="1_e5xjo"]
 [ext_resource type="Script" path="res://agents/team_agent/team_agent_end.gd" id="1_y3x8o"]
 
 [node name="TeamAgentEnd" type="Node2D"]
@@ -17,4 +16,3 @@ You need to tell the user their score and
  hopefully how many episodes their Agent ran. 
 
 Press \"P\" to return to the main menu. "
-script = ExtResource("1_e5xjo")
