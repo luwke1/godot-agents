@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://dxl4bvkbogaw8"]
+
+[ext_resource type="Script" path="res://agents/team_agent/Label.gd" id="1_e5xjo"]
+[ext_resource type="Script" path="res://agents/team_agent/team_agent_end.gd" id="1_y3x8o"]
+
+[node name="TeamAgentEnd" type="Node2D"]
+script = ExtResource("1_y3x8o")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 95.0
+offset_top = 70.0
+offset_right = 511.0
+offset_bottom = 171.0
+text = "Here is your end screen once yur Open Agent has run.  
+
+You need to tell the user their score and
+ hopefully how many episodes their Agent ran. 
+
+Press \"P\" to return to the main menu. "
+script = ExtResource("1_e5xjo")

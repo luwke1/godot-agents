@@ -1,0 +1,55 @@
+the text below has lost nearly all formatting ...
+
+Game Agent 2024-25 (Trial Event)
+
+DESCRIPTION:
+This event will determine a team’s ability to design and code an original computer Reinforcement Machine Learning Game Agent using Godot and Python to solve the game provided to them by the Supervisor.
+A TEAM UP TO: 2				APPROXIMATE TIME: 50 minutes
+IMPOUND: Yes				THEORY TEST: Yes
+EVENT PARAMETERS:
+Teams must bring their Game Agent on a thumb drive, written in Python as a file in the specified format, ready to upload into the Godot game engine for testing. 
+No Internet access is allowed. 
+No external resources or computer programs of any other kind are allowed. 
+No full games, solutions, or other game assets or files are allowed to be brought into the game room. 
+Supervisors will provide: 
+The Target Game running on a computer in Godot 4.2, with modifiable starting and ending parameters, a simple basic Agent solution example, and a method to upload Agents into the game and run it. 
+At the start of the season, the Supervisor will provide online on GitHub the Target Game for the season, a simple example Game Agent capable of solving the Target Game to an entry level, the format specifications for uploading the team’s own Game Agent into the Target Game, a list of the parameters that might be modified in the game on competition day, and a story around the scientific theme to help guide the team’s Agent development.
+THE COMPETITION
+Teams will impound their thumb drives before the event starts. 
+Teams will take a 20-minute multiple choice test on RML Game Agent theory. There will be roughly 20 multiple choice questions.
+At the competition hour teams may run their Agent against the provided parameters of the Target Game for as long or as short of a time as they want, to a maximum of 40 minutes. The runtime of their Agent is part of the score. The number of episodes is part of the score. 
+When teams are finished running their Agent against the Target Game, they must save their game following the Supervisor’s instructions in the specified format in a designated location (i.e., USB drive, desktop, online repository).
+The Target Game and scientific theme must be the same for all teams and allow students to design and code RML Agents to successfully complete the game.  
+Students will use the Godot 4.2 Game engine and IDE, and Python and associated RML libraries to create an original solution to the Target Game.
+PRACTICE GAME THEMES:
+Some game themes that have been used in the past that are NOT intended for current tournament use: Waves, Fire, Gravity, Newton’s Second Law..
+Our theme for this year will be Pulse Rockets from here to there. 
+SCORING:
+High score wins. Scoring of the event will be done using the Game Agent Rubric found on the Game Agent Github site. Points:
+G = Game Agent score when it is run by the event supervisor
+E = Number of episodes when it is run by the event supervisor in the scoring run before a successful landing
+S = number of Seconds in supervisor’s scoring run
+N = Number of seconds used in supervisor's final scoring episode 
+B = number of Bombs used in supervisor's final scoring episode 
+G = 1000 - 20*(E-1) - 2*S - 2*(B-15) - 5*(N-20) 
+M = number of Minutes from start before Game Agent is turned in
+Q =Quality of the Game Agent code  (???)  from Rubric
+T = score on Theory test
+GB = Game score of the highest score of any team at the event
+QB = Quality score of the highest score of any team at the event
+Team Score = 100*G/GB + 40*Q/QB + 2*T - 2*M
+Any team caught using files not part of their Game Agent, outside resources or accessing the internet outside of the event site will be asked to leave the room and be disqualified from the event. 
+Any team running the provided basic Game Agent example as their competition Game Agent will have an “E” score of 100,000, an “M” score of 600, and a “Q” score of 0. . 
+Any team not using an RML Game Agent to wolf the Target Game will have their final score multiplied by 0.25 because not using an RML Game Agent is a violation of the spirit of the competition. 
+Ties will be broken by comparing the point totals in the scoring areas in the following order: 
+Higher Game Agent score
+Lower number of Bombs used
+Lower Seconds score
+Lower Number of episodes score
+Overall Impression/Originality
+
+Recommended Resources: Being developed.  When available, it will be on our GitHub site. 
+
+
+
+
