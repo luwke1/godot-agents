@@ -10,7 +10,7 @@ var rocket_velocity = Vector3.ZERO
 var speed = 0
 var bombs = 60
 
-var power_node_position = Vector3(6,2,7)
+var power_node_position = Vector3(6,2,-7)
 var power_node_gen = true
 var time_since_start = 0
 

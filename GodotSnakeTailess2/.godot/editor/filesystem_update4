@@ -2,3 +2,5 @@ res://common/play_game_parameters.tscn
 res://starting_folder/main_menu.tscn
 res://common/rocketBAK.gd
 res://Neural Network/NNET.gd
+res://common/global_variables.gd
+res://common/play_game_parameters.gd

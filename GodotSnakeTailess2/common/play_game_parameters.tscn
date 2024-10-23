@@ -97,7 +97,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_cxqns")
 shape = SubResource("BoxShape3D_vx3wf")
 
 [node name="powerNode" parent="." instance=ExtResource("6_w0tbu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.581018, 1.94673, 4.12291)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.581018, 1.94673, -4.33193)
 
 [node name="launch_zone" parent="." instance=ExtResource("7_ptte0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.884598, 0)

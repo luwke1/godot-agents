@@ -13,7 +13,7 @@ func _ready():
 	print("team Agent boolean = ", Global.team_agent_boolean)
 
 	Global.bombs = 30
-	$powerNode.position = Vector3(6,2,7)
+	$powerNode.position = Vector3(6,2,-7)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
