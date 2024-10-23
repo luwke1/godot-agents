@@ -140,7 +140,7 @@ func _process(delta):
 		train_dqn()
 
 	# Update epsilon to reduce exploration over time
-	epsilon = max(0.1, epsilon * 0.99)
+	epsilon = max(0.1, epsilon * 0.995)
 	
 
 	# Update the target network periodically
@@ -156,12 +156,12 @@ func get_state() -> Array:
 	# Get the current state representation (e.g., position, velocity, etc.)
 	rocket_speed = linear_velocity
 	return [
-		float(rocket_position.x), 
-		float(rocket_position.z), 
-		float(rocket_speed.x), 
-		float(rocket_speed.z), 
-		float(daisey_position.x - rocket_position.x), 
-		float(daisey_position.z - rocket_position.z)
+		rocket_position.x, 
+		rocket_position.z, 
+		rocket_speed.x, 
+		rocket_speed.z, 
+		daisey_position.x - rocket_position.x, 
+		daisey_position.z - rocket_position.z
 	]
 
 func execute_action(action: int) -> void:
@@ -201,6 +201,10 @@ func get_reward() -> float:
 	elif distance_change < 0:
 		reward += distance_change * 20.0  # Negative reward proportional to distance increase
 
+	print("Previous Distance: ", previous_distance)
+	print("Current Distance: ", distance_to_daisey)
+	print("Distance Change: ", distance_change)
+
 	# Time-Based Penalty
 	var time_penalty = (current_time / max_time) * 5.0  # Scaling factor of 5.0 can be adjusted
 	reward -= time_penalty
@@ -208,7 +212,7 @@ func get_reward() -> float:
 	# Additional Step Penalty to discourage unnecessary movements
 	reward -= 0.5  # Fixed small penalty per step
 
-	return float(reward)
+	return reward
 
 
 #func get_reward() -> float:
@@ -252,48 +256,41 @@ func train_dqn() -> void:
 	var batch_targets = []
 	
 	# Process the batch
-	#for experience in batch:
-		#var state = experience[0]
-		#var action = experience[1]
-		#var reward = experience[2]
-		#var next_state = experience[3]
-		#var done = experience[4]
-		#
-		## Forward propagate through the Q-network for the current state
-		#q_network.set_input(state)
-		#q_network.propagate_forward()
-		#var q_values = q_network.get_output()
-		#
-		## Duplicate the Q-values to compute the target
-		#var target_q_values = q_values.duplicate()
-		#
-		## Forward propagate through the target network for the next state
-		#target_network.set_input(next_state)
-		#target_network.propagate_forward()
-		#var target_output = target_network.get_output()
-		#print(target_output)
-		#
-		## Get the maximum Q-value for the next state
-		#var max_next_q = target_output.max() if target_output.size() > 0 else 0
-		#
-		## Bellman equation: Q(s, a) = reward + gamma * max(Q(s', a'))
-		#if done:
-			#target_q_values[action] = reward  # No future rewards if episode is done
-		#else:
-			#target_q_values[action] = reward + gamma * max_next_q  # Include discounted future reward
-		#
-		## Append the state and the updated target Q-values to the batch
-		#batch_states.append(state)
-		#batch_targets.append(target_q_values)
-	#
-	##for i in batch_targets:
-		##print(i)
-			#
-	##print(batch_states.size())
-	##print(batch_targets.size())
-	## Train the Q-network on the entire batch
-	#q_network.train(batch_states, batch_targets)
-
+	for experience in batch:
+		var state = experience[0]
+		var action = experience[1]
+		var reward = experience[2]
+		var next_state = experience[3]
+		var done = experience[4]
+		
+		# Forward propagate through the Q-network for the current state
+		q_network.set_input(state)
+		q_network.propagate_forward()
+		var q_values = q_network.get_output()
+		
+		# Duplicate the Q-values to compute the target
+		var target_q_values = q_values.duplicate()
+		
+		# Forward propagate through the target network for the next state
+		target_network.set_input(next_state)
+		target_network.propagate_forward()
+		var target_output = target_network.get_output()
+		
+		# Get the maximum Q-value for the next state
+		var max_next_q = target_output.max() if target_output.size() > 0 else 0
+		
+		# Bellman equation: Q(s, a) = reward + gamma * max(Q(s', a'))
+		if done:
+			target_q_values[action] = reward  # No future rewards if episode is done
+		else:
+			target_q_values[action] = reward + gamma * max_next_q  # Include discounted future reward
+		
+		# Append the state and the updated target Q-values to the batch
+		batch_states.append(state)
+		batch_targets.append(target_q_values)
+	
+	# Train the Q-network on the entire batch
+	q_network.train(batch_states, batch_targets)
 
 
 #func train_dqn() -> void:
