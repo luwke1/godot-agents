@@ -41,17 +41,18 @@ var train_counter := 0
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	linear_damp = 0.1  # Apply linear damping to prevent excessive acceleration
 	
 	# Initialize the q_network and target_network
 	q_network.use_Adam(0.0001)
 	q_network.set_loss_function(BNNET.LossFunctions.MSE)
 	q_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 1)
-	q_network.set_function(BNNET.ActivationFunctions.identity, 2,2)
+	q_network.set_function(BNNET.ActivationFunctions.identity, 2, 2)
 	
 	target_network.use_Adam(0.0001)
 	target_network.set_loss_function(BNNET.LossFunctions.MSE)
 	target_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 1)
-	target_network.set_function(BNNET.ActivationFunctions.identity, 2,2)
+	target_network.set_function(BNNET.ActivationFunctions.identity, 2, 2)
 	
 	# Initialize networks
 	q_network.reinit()
@@ -59,6 +60,10 @@ func _ready():
 	
 	# Copy the weights to target_network to be an exact copy
 	target_network.assign(q_network)
+	
+	# Ensure initial positions are accurate
+	rocket_position = position
+	daisey_position = Global.power_node_position
 	
 	# Initialize state
 	state = get_state()
@@ -89,6 +94,20 @@ func _physics_process(delta):
 	# Execute the action
 	execute_action(action)
 	
+	var movement = ""
+	match action:
+		0: # Move right
+			movement = "Right"
+		1: # Move left
+			movement = "Left"
+		2: # Move back
+			movement = "Back"
+		3: # Move forward
+			movement = "Forward"
+	
+	var current_distance = (rocket_position - daisey_position).length()
+	print(movement, " Reward: ", previous_distance - current_distance)
+	
 	# Physics update happens here, so the agent moves according to the action
 	
 	# Calculate reward based on the new state after action is executed
@@ -101,11 +120,6 @@ func _physics_process(delta):
 	
 	# Update the state for the next iteration
 	state = next_state
-	
-	# Update previous_distance after updating the state
-	previous_distance = (rocket_position - daisey_position).length()
-	
-	#print("Action: ",action, " -- Reward: ",reward, " -- Distance: ", previous_distance)
 	
 	# Training the network less frequently to reduce lag
 	train_counter += 1
@@ -125,7 +139,7 @@ func choose_action(current_state):
 	var action = 0
 	if randf() < epsilon:
 		# Explore: choose a random action
-		print("random")
+		#print("Random action chosen.")
 		action = randi() % 4  # Assuming 4 possible actions
 	else:
 		# Exploit: choose the best action based on the Q-network
@@ -134,7 +148,9 @@ func choose_action(current_state):
 		var q_values = q_network.get_output()
 		# Select the action with the highest Q-value
 		if q_values.size() > 0:
-			print(q_values)
+			#print("Best action chosen")
+			#print("Q-values: ", q_values)
+			#print(q_values)
 			var max_q_value = q_values.max()
 			var best_actions = []
 			for i in range(q_values.size()):
@@ -154,55 +170,61 @@ func store_experience(state, action, reward, next_state, done):
 	replay_buffer.append([state, action, reward, next_state, done])
 
 func get_state() -> Array:
+	var norm_factor = 1000.0  # Adjust based on your environment's scale
 	rocket_speed = linear_velocity
 	return [
-		rocket_position.x, 
-		rocket_position.z, 
-		rocket_speed.x, 
-		rocket_speed.z, 
-		daisey_position.x - rocket_position.x, 
-		daisey_position.z - rocket_position.z
+		rocket_position.x / norm_factor,
+		rocket_position.z / norm_factor,
+		rocket_speed.x / norm_factor,
+		rocket_speed.z / norm_factor,
+		(daisey_position.x - rocket_position.x) / norm_factor,
+		(daisey_position.z - rocket_position.z) / norm_factor
 	]
 
 func execute_action(action: int) -> void:
 	# Execute the chosen action
+	var force = Vector3()
 	match action:
 		0: # Move right
-			apply_central_force(Vector3(1, 0, 0) * 20)
+			force = Vector3(1, 0, 0)
 		1: # Move left
-			apply_central_force(Vector3(-1, 0, 0) * 20)
+			force = Vector3(-1, 0, 0)
 		2: # Move back
-			apply_central_force(Vector3(0, 0, 1) * 20)
+			force = Vector3(0, 0, 1)
 		3: # Move forward
-			apply_central_force(Vector3(0, 0, -1) * 20)
+			force = Vector3(0, 0, -1)
+	apply_central_force(force * 50)  # Reduced force for smoother movement
+	# Limit the velocity
+	var max_speed = 10.0  # Adjust as needed
+	if linear_velocity.length() > max_speed:
+		linear_velocity = linear_velocity.normalized() * max_speed
 
-func get_reward() -> float:
-	var distance_to_daisey = (rocket_position - daisey_position).length()
+func get_reward():
+	var current_distance = (rocket_position - daisey_position).length()
+	var distance_reward = previous_distance - current_distance  # Positive if moving closer, negative if moving away
+	previous_distance = current_distance  # Update previous_distance for the next step
 	
-	# Reward for collecting the daisy
-	if distance_to_daisey < 0.5:
-		previous_distance = (rocket_position - daisey_position).length()
-		return 100.0  # Increased reward for collecting the coin
+	#print(current_distance, " Distance Reward: ", distance_reward)
 	
-	# Small penalty for each time step to encourage faster completion
-	var reward = -0.5
+	var time_penalty = -0.01  # Small negative reward to encourage faster completion
+	var goal_reward = 0.0
+	var goal_threshold = 0.1  # Distance threshold to consider the goal reached (adjust as needed)
 	
-	# Reward proportional to the decrease in distance
-	var distance_change = previous_distance - distance_to_daisey
+	if current_distance < goal_threshold:
+		goal_reward = 100.0  # Large positive reward for reaching the goal
+		print("Goal reached!")
+		# Optionally, set 'done' to true if you modify 'is_done()' to include goal achievement
 	
-	
-	if distance_change > 0:
-		reward += 10  # Reward for moving closer
-	elif distance_change < 0:
-		reward -= 10 + distance_to_daisey # Penalty for moving away
-	
-	# Update previous distance
-	previous_distance = distance_to_daisey
-	
+	var reward = distance_reward + time_penalty + goal_reward
 	return reward
 
+
 func is_done() -> bool:
-	return Global.bombs >= 120
+	var bounds = 100.0  # Adjust based on your map size
+	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
+		print("Agent went out of bounds.")
+		return true
+	return false
 
 func train_dqn() -> void:
 	# Shuffle the replay buffer and select a random batch of experiences without replacement
