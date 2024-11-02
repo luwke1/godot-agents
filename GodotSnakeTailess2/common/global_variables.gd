@@ -19,4 +19,6 @@ var q_agent_boolean = false
 var team_agent_boolean = false
 var human_player_boolean = false
 
+var reward_for_pickup = false
+
 var episode_score = 0

@@ -17,6 +17,7 @@ func _on_body_entered(body):
 	if(body == $"../rocket"):
 		#queue_free()
 		Global.bombs = Global.bombs + 10
+		Global.reward_for_pickup = true
 		#ai_controller_3d.reward += 20
 		regen_power_node()
 	
