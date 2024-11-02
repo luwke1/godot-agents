@@ -20,15 +20,15 @@ var current_time = 0
 @onready var pitch_pivot = $TwistPvot/PitchPivot
 
 # Import NNET
-var q_network : NNET = NNET.new([6, 64, 8], false)
-var target_network : NNET = NNET.new([6, 64, 8], false)
+var q_network : NNET = NNET.new([6, 128, 8], false)
+var target_network : NNET = NNET.new([6, 128, 8], false)
 
 # Variables for DQN implementation
 var epsilon := 1.0 # Epsilon for epsilon-greedy policy
-var gamma := 0.99 # Discount factor
+var gamma := 0.9 # Discount factor
 var replay_buffer := [] # Experience replay buffer
-var max_buffer_size := 5000
-var batch_size := 64
+var max_buffer_size := 1000
+var batch_size := 32
 var target_update_frequency := 100 # Update target network every 100 steps
 var step_count := 0 # Count the number of steps taken
 var state = [] # Current state of the agent
@@ -48,14 +48,13 @@ func _ready():
 	# Initialize the q_network and target_network
 	q_network.use_Adam(0.0005)
 	q_network.set_loss_function(BNNET.LossFunctions.MSE)
-	q_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 1)
-	q_network.set_function(BNNET.ActivationFunctions.identity, 2, 2)
+	q_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 2)
+	q_network.set_function(BNNET.ActivationFunctions.identity, 3, 3)
 	
 	target_network.use_Adam(0.0005)
 	target_network.set_loss_function(BNNET.LossFunctions.MSE)
-	target_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 1)
-	target_network.set_function(BNNET.ActivationFunctions.identity, 2, 2)
-	
+	target_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 2)
+	target_network.set_function(BNNET.ActivationFunctions.identity, 3, 3)
 	
 	# Copy the weights to target_network to be an exact copy
 	target_network.assign(q_network)
@@ -103,7 +102,7 @@ func _physics_process(delta):
 			train_counter = 0  # Reset the counter
 		
 		# Update epsilon to reduce exploration over time
-		epsilon = max(0.1, epsilon * 0.99)
+		epsilon = max(0.1, epsilon * 0.995)
 		
 		# Update the target network periodically
 		step_count += 1
@@ -138,6 +137,7 @@ func choose_action(current_state):
 		q_network.set_input(current_state)
 		q_network.propagate_forward()
 		var q_values = q_network.get_output()
+		
 		# Select the action with the highest Q-value
 		if q_values.size() > 0:
 			var max_q_value = q_values.max()
@@ -160,16 +160,16 @@ func store_experience(state, action, reward, next_state, done):
 	replay_buffer.append([state, action, reward, next_state, done])
 
 func get_state() -> Array:
-	var norm_factor = 50.0  # Adjust based on your environment's scale
+	var norm_factor = 50.0
 	rocket_speed = linear_velocity
-	var direction_to_coin = (daisey_position - rocket_position).normalized()
+	var distance_to_coin = (daisey_position - rocket_position).normalized()
 	return [
 		rocket_position.x / norm_factor,
 		rocket_position.z / norm_factor,
 		rocket_speed.x / norm_factor,
 		rocket_speed.z / norm_factor,
-		direction_to_coin.x,
-		direction_to_coin.z
+		distance_to_coin.x,
+		distance_to_coin.z
 	]
 
 func execute_action(action: int) -> void:
@@ -192,14 +192,14 @@ func execute_action(action: int) -> void:
 			force = Vector3(1, 0, 1).normalized()
 		7: # Move back-left
 			force = Vector3(-1, 0, 1).normalized()
-	apply_central_force(force * 40)  # Increased force for more movement
+	apply_central_force(force * 40) 
 	# Limit the velocity
-	var max_speed = 10.0  # Adjust as needed
+	var max_speed = 10.0 
 	if linear_velocity.length() > max_speed:
 		linear_velocity = linear_velocity.normalized() * max_speed
 
 func get_reward(previous_distance, current_distance):
-	var distance_reward = (previous_distance - current_distance) * 500  # Positive if moving closer
+	var distance_reward = (previous_distance - current_distance) * 35
 	
 	var bounds = 50.0
 	
@@ -208,7 +208,7 @@ func get_reward(previous_distance, current_distance):
 	
 	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
 		print(-150)
-		goal_reward-=150
+		goal_reward-=25
 	
 	if current_distance > previous_distance:
 		distance_reward += -1

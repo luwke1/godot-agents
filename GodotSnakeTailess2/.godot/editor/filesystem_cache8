@@ -1,5 +1,5 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1730504811
+::res://::1730591082
 README.md::TextFile::-1::1728745362::0::1::::<><>::
 ::res://addons/::1729291814
 ::res://addons/godot_rl_agents/::1729292884
@@ -57,18 +57,18 @@ team_agent_end.gd::GDScript::-1::1727118948::0::1::::<>Node2D<>::
 team_agent_end.tscn::PackedScene::8798077307135615805::1729284733::0::1::::<><>::res://agents/team_agent/team_agent_end.gd
 team_agent_start.gd::GDScript::-1::1728743574::0::1::::<>Node2D<>::
 team_agent_start.tscn::PackedScene::6013502441451049003::1729284733::0::1::::<><>::res://agents/team_agent/team_agent_start.gd
-::res://common/::1730500738
+::res://common/::1730507716
 AIController3D.gd::GDScript::-1::1728741246::0::1::::<>AIController3D<>::
 global_variables.gd::GDScript::-1::1730408994::0::1::::<>Node<>::
 launch_zone.tscn::PackedScene::8243353271086158794::1720278996::0::1::::<><>::
 new_standard_material_3d.tres::StandardMaterial3D::6490540869811197981::1727660692::0::1::::<><>::uid://cgncjkx3u8l87::::res://starting_folder/icon.svg
 play_game_parameters.gd::GDScript::-1::1729724776::0::1::::<>Node3D<>::
-play_game_parameters.tscn::PackedScene::4763916132810241311::1730500738::0::1::::<><>::res://common/play_game_parameters.gd<>uid://cd4gl7geyv4o1::::res://common/rocket.tscn<>uid://cgncjkx3u8l87::::res://starting_folder/icon.svg<>uid://7ic7lkuu0plq::::res://common/power_node.tscn<>uid://dppe3asyvb8di::::res://common/launch_zone.tscn
+play_game_parameters.tscn::PackedScene::4763916132810241311::1730507716::0::1::::<><>::res://common/play_game_parameters.gd<>uid://cd4gl7geyv4o1::::res://common/rocket.tscn<>uid://cgncjkx3u8l87::::res://starting_folder/icon.svg<>uid://7ic7lkuu0plq::::res://common/power_node.tscn<>uid://dppe3asyvb8di::::res://common/launch_zone.tscn
 power_node.gd::GDScript::-1::1730408879::0::1::::<>RigidBody3D<>::
 power_node.tscn::PackedScene::2262737191981335370::1727661272::0::1::::<><>::res://common/power_node.gd
 rocket.gd::GDScript::-1::1728710756::0::1::::<>RigidBody3D<>::
 rocket.tscn::PackedScene::5043660489088289682::1728744724::0::1::::<><>::res://common/rocketBAK.gd<>res://common/AIController3D.gd<>uid://cgncjkx3u8l87::::res://starting_folder/icon.svg<>res://addons/godot_rl_agents/sync.gd
-rocketBAK.gd::GDScript::-1::1730410690::0::1::::<>RigidBody3D<>::
+rocketBAK.gd::GDScript::-1::1730507716::0::1::::<>RigidBody3D<>::
 ::res://Neural Network/::1729712641
 base NNET class.gd::GDScript::-1::1729197592::0::1::::BNNET<>RefCounted<>res://addons/Neural Network/base NNET class.gd::
 example.gd::GDScript::-1::1729197592::0::1::::<>EditorPlugin<>::
@@ -78,11 +78,11 @@ plugin.cfg::TextFile::-1::1729197592::0::1::::<><>::
 ::res://script_templates/::1729291815
 ::res://script_templates/AIController/::1729292850
 controller_template.gd::GDScript::-1::1728700352::0::1::::<>RefCounted<>::
-::res://starting_folder/::1730410659
+::res://starting_folder/::1730507661
 docs.gd::GDScript::-1::1727834570::0::1::::<>Node2D<>::
 docs.tscn::PackedScene::4436378398721623830::1727834570::0::1::::<><>::res://starting_folder/docs.gd
 help.gd::GDScript::-1::1718810260::0::1::::<>Node2D<>::
 help.tscn::PackedScene::8616408968621475255::1727834934::0::1::::<><>::res://starting_folder/help.gd
 icon.svg::CompressedTexture2D::5220949408212082998::1714943336::1729292884::1::::<><>::
 main_menu.gd::GDScript::-1::1728742812::0::1::::<>Control<>::
-main_menu.tscn::PackedScene::8111940131135727645::1730410659::0::1::::<><>::res://starting_folder/main_menu.gd
+main_menu.tscn::PackedScene::8111940131135727645::1730507661::0::1::::<><>::res://starting_folder/main_menu.gd
