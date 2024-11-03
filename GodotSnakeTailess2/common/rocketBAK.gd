@@ -29,7 +29,7 @@ var gamma := 0.9 # Discount factor
 var replay_buffer := [] # Experience replay buffer
 var max_buffer_size := 1000
 var batch_size := 32
-var target_update_frequency := 100 # Update target network every 100 steps
+var target_update_frequency := 50 # Update target network every 100 steps
 var step_count := 0 # Count the number of steps taken
 var state = [] # Current state of the agent
 
@@ -199,7 +199,7 @@ func execute_action(action: int) -> void:
 		linear_velocity = linear_velocity.normalized() * max_speed
 
 func get_reward(previous_distance, current_distance):
-	var distance_reward = (previous_distance - current_distance) * 35
+	var distance_reward = (previous_distance - current_distance) * 25
 	
 	var bounds = 50.0
 	
@@ -207,7 +207,6 @@ func get_reward(previous_distance, current_distance):
 	var goal_reward = 0.0
 	
 	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
-		print(-150)
 		goal_reward-=25
 	
 	if current_distance > previous_distance:
@@ -219,7 +218,7 @@ func get_reward(previous_distance, current_distance):
 		Global.reward_for_pickup = false  # Reset the reward flag
 		goal_reward+=50
 	
-	var reward = distance_reward + time_penalty + goal_reward + goal_reward
+	var reward = distance_reward + time_penalty + goal_reward
 	return reward
 
 func is_done() -> bool:
