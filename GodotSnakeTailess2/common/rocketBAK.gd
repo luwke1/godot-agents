@@ -11,7 +11,7 @@ var rocket_position = Global.rocket_position
 var rocket_speed = Global.rocket_velocity
 var daisey_position = Global.power_node_position
 
-var max_time := 120.0 # Maximum time in seconds (2 minutes)
+var max_time := 120.0
 
 var start_time = Time.get_ticks_msec()
 var current_time = 0
@@ -87,8 +87,13 @@ func _physics_process(delta):
 	
 	# If we have a previous state and action, calculate the reward
 	if previous_state != null and previous_action != null:
+		
+		# Save the current distance
 		var current_distance = (rocket_position - daisey_position).length()
+		
+		# Get reward value for new location
 		var reward = get_reward(previous_distance, current_distance)
+		
 		var current_state = get_state()
 		var done = is_done()
 		
@@ -126,39 +131,46 @@ func _physics_process(delta):
 	# Update previous_action for the next iteration
 	previous_action = action
 
+# Uses the q_network to predict the best action and takes it
 func choose_action(current_state):
 	var action = 0
+	# Choose random action or best action
 	if randf() < epsilon:
-		# Explore: choose a random action
-		#print("RNADOM action")
 		action = randi() % 8 
 	else:
-		# Exploit: choose the best action based on the Q-network
+		# Run the current state through the q_network and propagate
 		q_network.set_input(current_state)
 		q_network.propagate_forward()
+		
+		# Get the predicted Q-values from the network
 		var q_values = q_network.get_output()
 		
-		# Select the action with the highest Q-value
+		# If there are q values, select the action with the highest Q-value
 		if q_values.size() > 0:
 			var max_q_value = q_values.max()
 			var best_actions = []
 			for i in range(q_values.size()):
 				if q_values[i] == max_q_value:
 					best_actions.append(i)
+					
+			# If theres a best action or multiple, pick a random best action
 			if best_actions.size() > 0:
 				action = best_actions[randi() % best_actions.size()]
-				#print("best action")
-			else:
+			else: # Otherwise just again pick a random action
 				action = randi() % 8
 		else:
 			action = randi() % 8
+	
+	# Return the action selected
 	return action
 
+# Function for storing experiences in the replay buffer
 func store_experience(state, action, reward, next_state, done):
 	if replay_buffer.size() >= max_buffer_size:
 		replay_buffer.pop_front()
 	replay_buffer.append([state, action, reward, next_state, done])
 
+# Function for grabbing the agents current state and view of the world
 func get_state() -> Array:
 	var norm_factor = 50.0
 	rocket_speed = linear_velocity
@@ -172,8 +184,8 @@ func get_state() -> Array:
 		distance_to_coin.z
 	]
 
+# Function to execute an action and move the agent in a direction
 func execute_action(action: int) -> void:
-	# Execute the chosen action
 	var force = Vector3()
 	match action:
 		0: # Move right
@@ -198,7 +210,9 @@ func execute_action(action: int) -> void:
 	if linear_velocity.length() > max_speed:
 		linear_velocity = linear_velocity.normalized() * max_speed
 
+# Function for getting the reward for the current state
 func get_reward(previous_distance, current_distance):
+	# Value of the agents change in distance from previous to current state
 	var distance_reward = (previous_distance - current_distance) * 25
 	
 	var bounds = 50.0
@@ -206,21 +220,26 @@ func get_reward(previous_distance, current_distance):
 	var time_penalty = -0.1
 	var goal_reward = 0.0
 	
+	# Checks if the agent is out of bounds and adds a very negative reward
 	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
 		goal_reward-=25
 	
+	# Just adds additional rewards or penalty based on if the agent is moving towards or away from coin
 	if current_distance > previous_distance:
 		distance_reward += -1
 	else:
 		distance_reward += 1
 	
+	# Checks if the agent picked up a coin, add a large reward
 	if Global.reward_for_pickup:
 		Global.reward_for_pickup = false  # Reset the reward flag
 		goal_reward+=50
 	
+	# Combine all the rewards for the current state and return
 	var reward = distance_reward + time_penalty + goal_reward
 	return reward
 
+# Function to determine if episode is done
 func is_done() -> bool:
 	var bounds = 50.0
 	# Check if the agent is out of bounds
@@ -230,6 +249,7 @@ func is_done() -> bool:
 		return true
 	return false
 
+# Helper function just to reset the world and agent
 func reset_agent() -> void:
 	# Reset agent position and relevant variables
 	position = launch_site  # Reset position to the launch site or any initial position
@@ -240,6 +260,7 @@ func reset_agent() -> void:
 	previous_distance = (rocket_position - daisey_position).length()
 	print("Agent has been reset to the starting position.")
 
+# Function to train the q_network on experiences in the replay buffer
 func train_dqn() -> void:
 	# Shuffle the replay buffer and select a random batch of experiences without replacement
 	var shuffled_buffer = replay_buffer.duplicate()
@@ -259,7 +280,7 @@ func train_dqn() -> void:
 		var next_state = experience[3]
 		var done = experience[4]
 		
-		# Forward propagate through the Q-network for the current state
+		# Forward propagate through the Q-network for the current experience state
 		q_network.set_input(state)
 		q_network.propagate_forward()
 		var q_values = q_network.get_output()
@@ -285,5 +306,5 @@ func train_dqn() -> void:
 		batch_states.append(state)
 		batch_targets.append(target_q_values)
 	
-	# Train the Q-network on the entire batch
+	# Train the Q-network on the entire batch of the target q values
 	q_network.train(batch_states, batch_targets)
