@@ -11,6 +11,10 @@ Provide a one paragraph synposis of what your team accomplished this sprint. Don
 ## Unfinished Work
 We didn't complete all the work we planned to do during this sprint because Duncan did not contribute.
 
+## Sprint Video
+
+Youtube Link: [https://youtu.be/SGdJZU3_xYI](https://youtu.be/j2SWoa5_008)
+
 ## Completed Issues/User Stories
 Here are links to the issues that we completed in this sprint:
 
