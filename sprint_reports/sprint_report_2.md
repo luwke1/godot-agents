@@ -50,14 +50,14 @@ Please review the following code files, which were actively developed during thi
 Here's what went well:
   * we created the first reinforcement learning agents on our game environments
   * we were able to modify the car racing environment to look more space-themed
-  * Item x
+  * The godot DQN Agent is able to learn how to play the game
  
 Here's what we'd like to improve:
    * improve the agent trained in the modified car racing environment (should turn around corners)
    * improve the modified environment to look more space-themed
-   * Item x
+   * The DQN agent still has trouble moving around the environment
   
 Here are changes we plan to implement in the next sprint:
    * increase training simulations and modify rewards to improve modified car racing agent
    * add stars to the background of car racing environment and make the car look more like a rocket
-   * Item x
+   * Fix the reward function in the DQN Agent
