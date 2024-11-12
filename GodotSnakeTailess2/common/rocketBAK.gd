@@ -27,9 +27,9 @@ var target_network : NNET = NNET.new([6, 128, 8], false)
 var epsilon := 1.0 # Epsilon for epsilon-greedy policy
 var gamma := 0.9 # Discount factor
 var replay_buffer := [] # Experience replay buffer
-var max_buffer_size := 4000
-var batch_size := 64
-var target_update_frequency := 200 # Update target network every 100 steps
+var max_buffer_size := 2000
+var batch_size := 32
+var target_update_frequency := 300
 var step_count := 0 # Count the number of steps taken
 var state = [] # Current state of the agent
 
@@ -99,7 +99,6 @@ func _physics_process(delta):
 		
 		# Store experience in the replay buffer
 		store_experience(previous_state, previous_action, reward, current_state, false)
-		#print(replay_buffer.size())
 		
 		# Training the network less frequently to reduce lag
 		train_counter += 1
@@ -226,7 +225,7 @@ func get_reward(previous_distance, current_distance):
 	
 	# Checks if the agent is out of bounds and adds a very negative reward
 	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
-		goal_reward-=10
+		goal_reward-=25
 	
 	# Just adds additional rewards or penalty based on if the agent is moving towards or away from coin
 	if current_distance > previous_distance:
@@ -237,7 +236,7 @@ func get_reward(previous_distance, current_distance):
 	# Checks if the agent picked up a coin, add a large reward
 	if Global.reward_for_pickup:
 		Global.reward_for_pickup = false  # Reset the reward flag
-		goal_reward+=20
+		goal_reward+=50
 	
 	# Combine all the rewards for the current state and return
 	var reward = distance_reward + time_penalty + goal_reward
@@ -312,6 +311,3 @@ func train_dqn() -> void:
 	
 	# Train the Q-network on the entire batch of the target q values
 	q_network.train(batch_states, batch_targets)
-	
-	#var loss = q_network.get_loss(batch_states, batch_targets)
-	#print("Training loss:", loss)
