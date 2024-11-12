@@ -18,6 +18,13 @@ doing its thing, whatever that is.
 
 NOTE: you must change the SYNCH node in \"Robot\"  to \"training\" before playing. "
 
+[node name="Button3" type="Button" parent="."]
+offset_left = 594.0
+offset_top = 56.0
+offset_right = 824.0
+offset_bottom = 87.0
+text = "Train your Open Team Agent"
+
 [node name="Button" type="Button" parent="."]
 offset_left = 311.0
 offset_top = 57.0
@@ -32,5 +39,6 @@ offset_right = 616.0
 offset_bottom = 399.0
 text = "Return to main menu"
 
+[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
