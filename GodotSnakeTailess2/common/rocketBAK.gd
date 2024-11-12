@@ -27,9 +27,9 @@ var target_network : NNET = NNET.new([6, 128, 8], false)
 var epsilon := 1.0 # Epsilon for epsilon-greedy policy
 var gamma := 0.9 # Discount factor
 var replay_buffer := [] # Experience replay buffer
-var max_buffer_size := 1000
+var max_buffer_size := 2000
 var batch_size := 32
-var target_update_frequency := 50 # Update target network every 100 steps
+var target_update_frequency := 500 # Update target network every 100 steps
 var step_count := 0 # Count the number of steps taken
 var state = [] # Current state of the agent
 
@@ -98,7 +98,7 @@ func _physics_process(delta):
 		var done = is_done()
 		
 		# Store experience in the replay buffer
-		store_experience(previous_state, previous_action, reward, current_state, done)
+		store_experience(previous_state, previous_action, reward, current_state, false)
 		
 		# Training the network less frequently to reduce lag
 		train_counter += 1
@@ -114,9 +114,12 @@ func _physics_process(delta):
 		if step_count % target_update_frequency == 0:
 			target_network.assign(q_network)
 		
-		# Prepare for the next iteration
-		previous_state = current_state
-		previous_distance = current_distance
+		if done:
+			reset_agent()
+		else:
+			# Prepare for the next iteration
+			previous_state = current_state
+			previous_distance = current_distance
 	else:
 		# First time initialization
 		previous_state = get_state()
@@ -245,7 +248,6 @@ func is_done() -> bool:
 	# Check if the agent is out of bounds
 	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
 		print("Agent went out of bounds.")
-		reset_agent()  # Reset the agent's position
 		return true
 	return false
 
@@ -258,6 +260,7 @@ func reset_agent() -> void:
 	start_time = Time.get_ticks_msec()  # Optionally reset the time
 	previous_state = get_state()  # Reinitialize the state
 	previous_distance = (rocket_position - daisey_position).length()
+	previous_action = null  # Reset previous action
 	print("Agent has been reset to the starting position.")
 
 # Function to train the q_network on experiences in the replay buffer
