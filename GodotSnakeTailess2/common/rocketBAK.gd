@@ -29,7 +29,7 @@ var gamma := 0.9 # Discount factor
 var replay_buffer := [] # Experience replay buffer
 var max_buffer_size := 2000
 var batch_size := 32
-var target_update_frequency := 300
+var target_update_frequency := 200
 var step_count := 0 # Count the number of steps taken
 var state = [] # Current state of the agent
 
