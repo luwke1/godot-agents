@@ -2,7 +2,7 @@ extends Node3D
 
 @onready var twist_pivot := $TwistPivot
 @onready var pitch_pivot = $TwistPivot/PitchPivot 
-
+@onready var rocket_instance = $rocket
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -21,6 +21,13 @@ func _process(delta):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 	if Input.is_key_pressed(KEY_P):
+		Global.human_player_boolean = false
+		Global.team_agent_boolean = false
+		Global.train_team_agent_boolean = false
+		if rocket_instance.has_method("save_agent"):
+			rocket_instance.save_agent()
+			print("Saving agent state...")
+		
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		get_tree().change_scene_to_file("res://starting_folder/main_menu.tscn")
 		

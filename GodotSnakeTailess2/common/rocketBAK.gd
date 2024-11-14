@@ -68,6 +68,9 @@ func _ready():
 	
 	# Initialize previous_state
 	previous_state = get_state()
+	
+	if Global.team_agent_boolean:
+		load_agent()
 
 func _physics_process(delta):
 	daisey_position = Global.power_node_position
@@ -254,6 +257,7 @@ func is_done() -> bool:
 # Helper function just to reset the world and agent
 func reset_agent() -> void:
 	# Reset agent position and relevant variables
+	Global.bombs = 30
 	position = launch_site  # Reset position to the launch site or any initial position
 	rocket_position = position
 	linear_velocity = Vector3(0, 0, 0)  # Reset velocity to zero
@@ -311,3 +315,88 @@ func train_dqn() -> void:
 	
 	# Train the Q-network on the entire batch of the target q values
 	q_network.train(batch_states, batch_targets)
+
+
+# Function to save the trained agent
+func save_agent():
+	# Paths for saving data
+	var weights_path = "user://q_network_weights.dat"
+	var agent_data_path = "user://agent_data.save"
+
+	# Save the Q-network weights using FileAccess
+	var weights_file = FileAccess.open(weights_path, FileAccess.WRITE)
+	if weights_file == null:
+		push_error("Failed to open weights file for writing: ", weights_path)
+	else:
+		q_network.save_binary(weights_path)
+		print("Q-network weights saved to ", weights_path)
+
+	# Prepare agent parameters to save
+	var agent_data = {
+		"epsilon": epsilon,
+		"gamma": gamma,
+		"step_count": step_count,
+		"train_counter": train_counter,
+		"previous_state": previous_state,
+		"previous_action": previous_action,
+		"current_time": current_time,
+		"replay_buffer": replay_buffer  # Optional: Include if you want to resume training
+	}
+
+	# Serialize and save agent parameters using FileAccess
+	var agent_file = FileAccess.open(agent_data_path, FileAccess.WRITE)
+	if agent_file == null:
+		push_error("Failed to open agent data file for writing: ", agent_data_path)
+	else:
+		agent_file.store_var(agent_data)
+		agent_file.close()
+		print("Agent parameters saved to ", agent_data_path)
+
+# Function to load a trained agent
+func load_agent():
+	# Paths for loading data
+	var weights_path = "user://q_network_weights.dat"
+	var agent_data_path = "user://agent_data.save"
+
+	# Load the Q-network weights using FileAccess
+	if not FileAccess.file_exists(weights_path):
+		push_error("Weights file does not exist: ", weights_path)
+	else:
+		# Directly call load_data without capturing a return value
+		q_network.load_data(weights_path)
+		print("Q-network weights loaded from ", weights_path)
+
+		# Assign loaded weights to the target network
+		target_network.assign(q_network)
+		print("Target network synchronized with Q-network.")
+
+	# Load agent parameters using FileAccess
+	if not FileAccess.file_exists(agent_data_path):
+		push_error("Agent data file does not exist: ", agent_data_path)
+	else:
+		var agent_file = FileAccess.open(agent_data_path, FileAccess.READ)
+		if agent_file == null:
+			push_error("Failed to open agent data file for reading: ", agent_data_path)
+		else:
+			var agent_data = agent_file.get_var()
+			agent_file.close()
+
+			# Validate loaded data
+			if typeof(agent_data) != TYPE_DICTIONARY:
+				push_error("Agent data corrupted or invalid format.")
+				return
+
+			# Restore agent parameters
+			epsilon = agent_data.get("epsilon", 1.0)
+			gamma = agent_data.get("gamma", 0.9)
+			step_count = agent_data.get("step_count", 0)
+			train_counter = agent_data.get("train_counter", 0)
+			previous_state = agent_data.get("previous_state", null)
+			previous_action = agent_data.get("previous_action", null)
+			current_time = agent_data.get("current_time", 0)
+			replay_buffer = agent_data.get("replay_buffer", [])
+			print("Agent parameters loaded from ", agent_data_path)
+
+			# Optionally, set epsilon to a low value for inference (exploit learned policy)
+			#epsilon = 0.0
+			#print("Epsilon set to ", epsilon, " for exploitation.")

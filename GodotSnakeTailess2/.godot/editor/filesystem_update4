@@ -2,3 +2,6 @@ res://starting_folder/main_menu.tscn
 res://common/play_game_parameters.tscn
 res://agents/team_agent/team_agent_start.tscn
 res://common/rocketBAK.gd
+res://agents/team_agent/RML_agent_run.tscn
+res://common/play_game_parameters.gd
+res://agents/team_agent/team_agent_start.gd
