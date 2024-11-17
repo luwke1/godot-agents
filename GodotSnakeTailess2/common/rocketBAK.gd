@@ -27,9 +27,9 @@ var target_network : NNET = NNET.new([6, 128, 8], false)
 var epsilon := 1.0 # Epsilon for epsilon-greedy policy
 var gamma := 0.9 # Discount factor
 var replay_buffer := [] # Experience replay buffer
-var max_buffer_size := 2000
+var max_buffer_size := 1000
 var batch_size := 32
-var target_update_frequency := 200
+var target_update_frequency := 100
 var step_count := 0 # Count the number of steps taken
 var state = [] # Current state of the agent
 
@@ -180,14 +180,14 @@ func store_experience(state, action, reward, next_state, done):
 func get_state() -> Array:
 	var norm_factor = 50.0
 	rocket_speed = linear_velocity
-	var distance_to_coin = (daisey_position - rocket_position).normalized()
+	var distance_to_coin = daisey_position - rocket_position
 	return [
 		rocket_position.x / norm_factor,
 		rocket_position.z / norm_factor,
 		rocket_speed.x / norm_factor,
 		rocket_speed.z / norm_factor,
-		distance_to_coin.x,
-		distance_to_coin.z
+		distance_to_coin.x / norm_factor,
+		distance_to_coin.z / norm_factor
 	]
 
 # Function to execute an action and move the agent in a direction
@@ -228,7 +228,7 @@ func get_reward(previous_distance, current_distance):
 	
 	# Checks if the agent is out of bounds and adds a very negative reward
 	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
-		goal_reward-=25
+		goal_reward-=50
 	
 	# Just adds additional rewards or penalty based on if the agent is moving towards or away from coin
 	if current_distance > previous_distance:
@@ -239,10 +239,11 @@ func get_reward(previous_distance, current_distance):
 	# Checks if the agent picked up a coin, add a large reward
 	if Global.reward_for_pickup:
 		Global.reward_for_pickup = false  # Reset the reward flag
-		goal_reward+=50
+		goal_reward+=40
 	
 	# Combine all the rewards for the current state and return
 	var reward = distance_reward + time_penalty + goal_reward
+	#print(reward)
 	return reward
 
 # Function to determine if episode is done
@@ -313,6 +314,8 @@ func train_dqn() -> void:
 		batch_states.append(state)
 		batch_targets.append(target_q_values)
 	
+	print(q_network.get_loss(batch_states, batch_targets))
+	
 	# Train the Q-network on the entire batch of the target q values
 	q_network.train(batch_states, batch_targets)
 
@@ -354,6 +357,7 @@ func save_agent():
 
 # Function to load a trained agent
 func load_agent():
+	print( "LOADDINGIGNIGNIGNINGININGIDS")
 	# Paths for loading data
 	var weights_path = "user://q_network_weights.dat"
 	var agent_data_path = "user://agent_data.save"
@@ -391,12 +395,10 @@ func load_agent():
 			gamma = agent_data.get("gamma", 0.9)
 			step_count = agent_data.get("step_count", 0)
 			train_counter = agent_data.get("train_counter", 0)
-			previous_state = agent_data.get("previous_state", null)
-			previous_action = agent_data.get("previous_action", null)
 			current_time = agent_data.get("current_time", 0)
 			replay_buffer = agent_data.get("replay_buffer", [])
 			print("Agent parameters loaded from ", agent_data_path)
 
 			# Optionally, set epsilon to a low value for inference (exploit learned policy)
-			#epsilon = 0.0
-			#print("Epsilon set to ", epsilon, " for exploitation.")
+			epsilon = 0.0
+			print("Epsilon set to ", epsilon, " for exploitation.")

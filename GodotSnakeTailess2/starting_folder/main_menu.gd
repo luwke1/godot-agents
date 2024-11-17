@@ -28,7 +28,6 @@ func _on_run_function_agent_pressed():
 
 
 func _on_run_agent_pressed():	# NOT USED
-	Global.team_agent_boolean = true
 	get_tree().change_scene_to_file("res://agents/team_agent/team_agent_start.tscn")
 	# note that this button is for the teams own Agent - aka the Open Agent or the Team Agent
 

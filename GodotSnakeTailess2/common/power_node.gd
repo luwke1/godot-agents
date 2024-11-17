@@ -3,7 +3,6 @@ extends RigidBody3D
 const ROT_SPEED = 5     # the numbere of degrees the Nodule rotates every frame
 
 @onready var power_node = $"."
-@onready var ai_controller_3d: Node3D = $AIController3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
