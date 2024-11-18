@@ -20,15 +20,15 @@ var current_time = 0
 @onready var pitch_pivot = $TwistPvot/PitchPivot
 
 # Import NNET
-var q_network : NNET = NNET.new([6, 128, 8], false)
-var target_network : NNET = NNET.new([6, 128, 8], false)
+var q_network : NNET = NNET.new([2, 128, 8], false)
+var target_network : NNET = NNET.new([2, 128, 8], false)
 
 # Variables for DQN implementation
 var epsilon := 1.0 # Epsilon for epsilon-greedy policy
 var gamma := 0.9 # Discount factor
 var replay_buffer := [] # Experience replay buffer
-var max_buffer_size := 1000
-var batch_size := 32
+var max_buffer_size := 1200
+var batch_size := 64
 var target_update_frequency := 100
 var step_count := 0 # Count the number of steps taken
 var state = [] # Current state of the agent
@@ -38,7 +38,7 @@ var previous_state = null
 var previous_action = null
 
 # Training frequency variables
-var train_frequency := 4
+var train_frequency := 6
 var train_counter := 0
 
 func _ready():
@@ -88,6 +88,7 @@ func _physics_process(delta):
 	current_time = (Time.get_ticks_msec() - start_time)/1000
 	$elapsed_time.text = str(round(current_time))
 	
+	#print(epsilon)
 	# If we have a previous state and action, calculate the reward
 	if previous_state != null and previous_action != null:
 		
@@ -110,7 +111,8 @@ func _physics_process(delta):
 			train_counter = 0  # Reset the counter
 		
 		# Update epsilon to reduce exploration over time
-		epsilon = max(0.1, epsilon * 0.995)
+		#print(epsilon)
+		epsilon = max(0.1, epsilon * 0.999)
 		
 		# Update the target network periodically
 		step_count += 1
@@ -181,11 +183,15 @@ func get_state() -> Array:
 	var norm_factor = 50.0
 	rocket_speed = linear_velocity
 	var distance_to_coin = daisey_position - rocket_position
+	print([
+		#rocket_position.x / norm_factor,
+		#rocket_position.z / norm_factor,
+		#rocket_speed.x / norm_factor,
+		#rocket_speed.z / norm_factor,
+		distance_to_coin.x / norm_factor,
+		distance_to_coin.z / norm_factor
+	])
 	return [
-		rocket_position.x / norm_factor,
-		rocket_position.z / norm_factor,
-		rocket_speed.x / norm_factor,
-		rocket_speed.z / norm_factor,
 		distance_to_coin.x / norm_factor,
 		distance_to_coin.z / norm_factor
 	]
@@ -223,27 +229,26 @@ func get_reward(previous_distance, current_distance):
 	
 	var bounds = 50.0
 	
-	var time_penalty = -0.1
+	var time_penalty = -0.5
 	var goal_reward = 0.0
 	
 	# Checks if the agent is out of bounds and adds a very negative reward
 	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
-		goal_reward-=50
+		goal_reward-=100
 	
 	# Just adds additional rewards or penalty based on if the agent is moving towards or away from coin
 	if current_distance > previous_distance:
-		distance_reward += -1
+		distance_reward += -2
 	else:
 		distance_reward += 1
 	
 	# Checks if the agent picked up a coin, add a large reward
 	if Global.reward_for_pickup:
 		Global.reward_for_pickup = false  # Reset the reward flag
-		goal_reward+=40
+		goal_reward+=50
 	
 	# Combine all the rewards for the current state and return
 	var reward = distance_reward + time_penalty + goal_reward
-	#print(reward)
 	return reward
 
 # Function to determine if episode is done
@@ -314,7 +319,7 @@ func train_dqn() -> void:
 		batch_states.append(state)
 		batch_targets.append(target_q_values)
 	
-	print(q_network.get_loss(batch_states, batch_targets))
+	#print(q_network.get_loss(batch_states, batch_targets))
 	
 	# Train the Q-network on the entire batch of the target q values
 	q_network.train(batch_states, batch_targets)
@@ -357,7 +362,7 @@ func save_agent():
 
 # Function to load a trained agent
 func load_agent():
-	print( "LOADDINGIGNIGNIGNINGININGIDS")
+	#print("FSAFSFSF")
 	# Paths for loading data
 	var weights_path = "user://q_network_weights.dat"
 	var agent_data_path = "user://agent_data.save"
@@ -400,5 +405,5 @@ func load_agent():
 			print("Agent parameters loaded from ", agent_data_path)
 
 			# Optionally, set epsilon to a low value for inference (exploit learned policy)
-			epsilon = 0.0
+			epsilon = 0.1
 			print("Epsilon set to ", epsilon, " for exploitation.")
