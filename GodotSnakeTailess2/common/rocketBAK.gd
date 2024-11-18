@@ -88,7 +88,6 @@ func _physics_process(delta):
 	current_time = (Time.get_ticks_msec() - start_time)/1000
 	$elapsed_time.text = str(round(current_time))
 	
-	#print(epsilon)
 	# If we have a previous state and action, calculate the reward
 	if previous_state != null and previous_action != null:
 		
@@ -183,14 +182,14 @@ func get_state() -> Array:
 	var norm_factor = 50.0
 	rocket_speed = linear_velocity
 	var distance_to_coin = daisey_position - rocket_position
-	print([
-		#rocket_position.x / norm_factor,
-		#rocket_position.z / norm_factor,
-		#rocket_speed.x / norm_factor,
-		#rocket_speed.z / norm_factor,
-		distance_to_coin.x / norm_factor,
-		distance_to_coin.z / norm_factor
-	])
+	#print([
+		##rocket_position.x / norm_factor,
+		##rocket_position.z / norm_factor,
+		##rocket_speed.x / norm_factor,
+		##rocket_speed.z / norm_factor,
+		#distance_to_coin.x / norm_factor,
+		#distance_to_coin.z / norm_factor
+	#])
 	return [
 		distance_to_coin.x / norm_factor,
 		distance_to_coin.z / norm_factor
@@ -224,32 +223,35 @@ func execute_action(action: int) -> void:
 
 # Function for getting the reward for the current state
 func get_reward(previous_distance, current_distance):
-	# Value of the agents change in distance from previous to current state
-	var distance_reward = (previous_distance - current_distance) * 25
-	
+	var distance_reward = 0
 	var bounds = 50.0
-	
 	var time_penalty = -0.5
 	var goal_reward = 0.0
-	
-	# Checks if the agent is out of bounds and adds a very negative reward
-	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
-		goal_reward-=100
-	
-	# Just adds additional rewards or penalty based on if the agent is moving towards or away from coin
-	if current_distance > previous_distance:
-		distance_reward += -2
-	else:
-		distance_reward += 1
-	
-	# Checks if the agent picked up a coin, add a large reward
+
 	if Global.reward_for_pickup:
-		Global.reward_for_pickup = false  # Reset the reward flag
-		goal_reward+=50
-	
+		# The coin was just picked up
+		Global.reward_for_pickup = false  # Reset the flag
+		goal_reward += 40  # Provide the goal reward
+		# Reset previous_distance to prevent large negative reward
+		previous_distance = (rocket_position - daisey_position).length()
+	else:
+		# Calculate the distance reward as usual
+		distance_reward = (previous_distance - current_distance) * 25
+
+		if current_distance > previous_distance:
+			distance_reward += -3  # Penalty for moving away
+		else:
+			distance_reward += 1   # Reward for moving closer
+
+	# Check if the agent is out of bounds
+	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
+		goal_reward -= 50  # Penalty for going out of bounds
+
 	# Combine all the rewards for the current state and return
 	var reward = distance_reward + time_penalty + goal_reward
+	#print("Reward: ", reward)
 	return reward
+
 
 # Function to determine if episode is done
 func is_done() -> bool:
@@ -345,10 +347,6 @@ func save_agent():
 		"gamma": gamma,
 		"step_count": step_count,
 		"train_counter": train_counter,
-		"previous_state": previous_state,
-		"previous_action": previous_action,
-		"current_time": current_time,
-		"replay_buffer": replay_buffer  # Optional: Include if you want to resume training
 	}
 
 	# Serialize and save agent parameters using FileAccess
@@ -400,8 +398,6 @@ func load_agent():
 			gamma = agent_data.get("gamma", 0.9)
 			step_count = agent_data.get("step_count", 0)
 			train_counter = agent_data.get("train_counter", 0)
-			current_time = agent_data.get("current_time", 0)
-			replay_buffer = agent_data.get("replay_buffer", [])
 			print("Agent parameters loaded from ", agent_data_path)
 
 			# Optionally, set epsilon to a low value for inference (exploit learned policy)
