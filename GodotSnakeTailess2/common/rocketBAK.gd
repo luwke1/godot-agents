@@ -79,6 +79,9 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	
+	if (Global.bombs == 120):
+		get_tree().change_scene_to_file("res://starting_folder/win_screen.tscn")
+	
 	# Update labels and other variables
 	var my_velocity = linear_velocity
 	$my_speed.text = str(round(my_velocity.length()))

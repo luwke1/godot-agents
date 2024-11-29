@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://f6sm7riuclr"]
+
+[ext_resource type="Script" path="res://starting_folder/win_screen.gd" id="1_p54an"]
+
+[node name="WinScreen_gd" type="Node2D"]
+script = ExtResource("1_p54an")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 125.0
+offset_top = 206.0
+offset_right = 402.0
+offset_bottom = 281.0
+text = "The agent won!
+
+It succesfully collected 120 daiseys"
+
+[node name="Button" type="Button" parent="Label"]
+layout_mode = 0
+offset_left = 335.0
+offset_top = 219.0
+offset_right = 503.0
+offset_bottom = 272.0
+text = "Main Menu"
+
+[connection signal="pressed" from="Label/Button" to="." method="_on_button_pressed"]
