@@ -363,7 +363,12 @@ func save_agent():
 
 # Function to load a trained agent
 func load_agent():
-	#print("FSAFSFSF")
+	# Reset environment variables
+	previous_state = get_state()
+	previous_distance = (rocket_position - daisey_position).length()
+	previous_action = null
+	
+	print("Agent states reset after loading.")
 	# Paths for loading data
 	var weights_path = "user://q_network_weights.dat"
 	var agent_data_path = "user://agent_data.save"
