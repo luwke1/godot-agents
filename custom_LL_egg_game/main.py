@@ -2,8 +2,9 @@ from wrapper import Wrapper
 
 import tkinter as tk
 from tkinter import filedialog, messagebox
-
+import webbrowser
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
@@ -33,8 +34,11 @@ class EggDropMenu:
         tk.Button(root, text="Train PPO Agent", command=self.train_model_ppo).grid(row=4, column=0, padx=10, pady=10)
         tk.Button(root, text="Test PPO Agent", command=self.test_model_ppo).grid(row=4, column=1, padx=10, pady=10)
 
+        # How to Play Button
+        tk.Button(root, text="How to Play", command=self.show_how_to_play).grid(row=5, column=0, padx=10, pady=10)
+
         # Documentation Button
-        tk.Button(root, text="Documentation", command=self.show_documentation).grid(row=5, column=0, padx=10, pady=10)
+        tk.Button(root, text="Documentation", command=self.open_documentation).grid(row=5, column=1, padx=10, pady=10)
 
         # Exit Button
         tk.Button(root, text="Exit", command=root.quit).grid(row=5, column=2, padx=10, pady=10)
@@ -129,37 +133,38 @@ class EggDropMenu:
         except:
             messagebox.showerror("Error", "make sure you are loading a PPO save file")
 
-    def show_documentation(self):
+    def show_how_to_play(self):
         text = """
-        To play the game
+        To play the game:
 
-        Use the up arrow to move the egg up
-        Use the left and right arrows to move in the corresponding direction
+        - Use the up arrow to move the egg up.
+        - Use the left and right arrows to move in the corresponding direction.
 
         Points are earned by:
-
-        Moving close to the landing area
-        Moving slowly
-        Keeping the egg horizontal
-        10 points for each leg in contact with the ground
-        100 points for a safe landing
+        - Moving close to the landing area.
+        - Moving slowly.
+        - Keeping the egg horizontal.
+        - 10 points for each leg in contact with the ground.
+        - 100 points for a safe landing.
 
         Penalties:
+        - Moving away from the landing area.
+        - Moving too fast.
+        - Tilting the egg.
+        - Using wind to move the egg sideways (-0.03).
+        - Using the wind to move the egg up (-0.3).
+        - -100 for crashing.
 
-        Moving away from the landing area
-        moving too fast
-        tilting the egg
-        using wind to move the egg sideways -0.03
-        using the wind to move the egg up -0.3
-        -100 for crashing
-
-        Landings above 200 points are considered successful
-
-        After training an agent, videos for some of the simulations will be stored in the videos folder
-        Graphs showing the agent's training over time will be stored in the plots folder
-
+        Landings above 200 points are considered successful.
+        
+        - After training an agent, videos for some of the simulations will be stored in the videos folder
+        - Graphs showing the agent's training over time will be stored in the plots folder
         """
-        messagebox.showinfo("Documentation", text)
+        messagebox.showinfo("How to Play", text)
+
+    def open_documentation(self):
+        # Open the documentation link in the default web browser
+        webbrowser.open("https://shorturl.at/l19pA")
 
 # Initialize the Tkinter root and menu
 root = tk.Tk()
