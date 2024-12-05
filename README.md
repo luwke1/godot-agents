@@ -41,12 +41,38 @@ Here are the future prerequisites that will be required to run our project.
     pip install torch
     ```
 
+### Godot DQN Agent Installation Steps
 
-## Functionality
+1. Clone the repository and switch to the DQNAgent branch:
+   ```bash
+   git clone -b DQNAgent https://github.com/luwke1/godot-agents.git
+   cd godot-agents
+   ```
 
-You can run the current monte carlo python implementation by running the 'main.py' file in 'simplified_algorithms' folder
+2. Open the project in Godot:
+   - Launch Godot.
+   - Click on "Import" and navigate to the `godot-agents` folder.
+   - Select the `project.godot` file and import it.
 
+3. Run the game:
+   - Press the Play button in Godot to test the environment.
 
+4. Observe the DQN agent in action:
+   - The DQN agent's logic and behavior will be demonstrated in the imported game environment.
+
+## DQN Agent Functionality
+
+- **Run the DQN Agent**:
+  - Observe the pre-configured DQN agent interacting with the game environment.
+
+- **Train the DQN Agent**:
+  - Begin training of the DQN Agent and save training results to file system.
+
+- **View Documentation of Agent**:
+  - Button to view the documentation of the current agent.
+
+- **Customize the Agent**:
+  - Modify the provided scripts in Godot to adjust the agent's behavior and learning logic.
 
 ## Additional Documentation
 
