@@ -4,14 +4,11 @@
 
 ### One-sentence description of the project
 
-Reinforcement machine learning agents designed to complete a video game in the godot engine and a game to be used the next year.
+Godot Agents is an educational initiative that uses reinforcement learning agents to teach K-12 students the fundamentals of machine learning through interactive games built in Godot.
 
 ### Additional information about the project
 
-This project aims to introduce K-12 students to the concepts of Reinforcement Machine Learning (RML). Our team is tasked with designing an agent for the current draft game and providing supporting documentation for students, along with a feedback document for the results of a trial event in December. Each team member will also design a new game for the following year, exploring different genres to show the diverse range of RML agents. Through this, students will gain foundational knowledge on Machine Learning and AI, preparing them for future challenges in a technology-driven world.
-
-We are planning on implenting two reinforcement learning algorithms that will be documented and used to solve a game in Godot
-The first agent will utilize Monte Carlo techniques, and the second agent will use the REINFORCE Policy Gradient algorithm.
+This repository contains implementations of reinforcement learning algorithms, specifically a Deep Q-Network (DQN) agent (in the `DQNAgent` branch) and other experimental setups in the main branch. The project aims to make machine learning accessible and engaging for students by demonstrating how agents can learn to play games through trial and error.
 
 ## Installation
 
