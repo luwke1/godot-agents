@@ -69,7 +69,70 @@ Here are the future prerequisites that will be required to run our project.
   - Button to view the documentation of the current agent.
 
 - **Customize the Agent**:
-  - Modify the provided scripts in Godot to adjust the agent's behavior and learning logic.
+  - Modify the provided scripts in Godot to adjust the agent's behavior and learning logic
+
+
+### Prerequisites for Egg Drop Game
+
+This project requires
+- Python 3.7 or higher
+- numpy
+- pytorch
+- gymnasium
+- matplotlib
+- pandas
+- pygame
+- box2d
+
+The above libraries can be installed using
+```bash
+pip install numpy
+pip install torch torchvision torchaudio
+pip install gymnasium
+pip install matplotlib
+pip install pandas
+pip install pygame
+pip install gymnasium[box2d]
+pip install box2d-py
+```
+
+
+### Egg Drop Game Installation Steps
+
+clone the repository, navigate to custom_LL_egg_game, run main
+  ```bash
+  git clone https://github.com/luwke1/godot-agents.git
+  cd godot-agents/custom_LL_egg_game
+  python3 main.py
+   ```
+
+## Egg Game Functionality
+
+- **Play Game**:
+  - allows the user to play the game without the agent
+
+- **Train Q Agent**:
+  - Trains the Q agent on the number of steps in the "Number of Steps for Training" box
+
+- **Test Q Agent**:
+  - Runs a trained Q agent on the environment once and returns the result.
+  - The "Load Policy File" box must be filled in with the path of a trained Q agent
+ 
+- **Train PPO Agent**:
+  - Trains the PPO agent on the number of steps in the "Number of Steps for Training" box
+
+- **Test PPO Agent**:
+  - Runs a trained PPO agent on the environment once and returns the result.
+  - The "Load Policy File" box must be filled in with the path of a trained PPO agent
+
+- **How to Play**:
+  - explains the controls and points system for the game
+ 
+- **Documentation**:
+  - Opens a web browser to the documentation of the game and agents
+
+- **Exit**:
+  - closes the menu
 
 ## Additional Documentation
 
