@@ -22,6 +22,13 @@ Here are links to the issues that we completed in this sprint:
 - [Load trained data functionality](https://github.com/luwke1/godot-agents/issues/41)
 - [DQN Agent implementation in Godot](https://github.com/luwke1/godot-agents/issues/36)
 - [DQN Agent Final Documentation](https://github.com/luwke1/godot-agents/issues/28)
+- [Prototype Project Report - Draft](https://github.com/luwke1/godot-agents/issues/31)
+- [In-class Presentation](https://github.com/luwke1/godot-agents/issues/32)
+- [Client Prototype Demo](https://github.com/luwke1/godot-agents/issues/33)
+- [modify lunar lander environment](https://github.com/luwke1/godot-agents/issues/42)
+- [Train Q learning agent on custom lunar lander game](https://github.com/luwke1/godot-agents/issues/43)
+- [Train PPO agent on modified lunar lander environment](https://github.com/luwke1/godot-agents/issues/12)
+- [client documentation - modified lunar lander and agents](https://github.com/luwke1/godot-agents/issues/26)
 
 ### Completed Story Points Summary:
 - **Luke**: 20 story points  
@@ -36,6 +43,13 @@ We completed everything that was required for Sprint 3.
 Please review the following code files, which were actively developed during this sprint, for quality:
 - [DQN Agent: rocketBAK.py](https://github.com/luwke1/godot-agents/blob/DQNAgent/GodotSnakeTailess2/common/rocketBAK.gd)
 - [DQN Agennt Final Documentation.pdf](https://github.com/luwke1/godot-agents/blob/754252a165f82552f1c0074de6152ec5e5248b79/documents/DQNAgentDocumentation%20%5BFinal%20Draft%5D.pdf)
+- [Egg Game: main.py](https://github.com/luwke1/godot-agents/blob/main/custom_LL_egg_game/main.py)
+- [Egg Game: Custom_LL.py](https://github.com/luwke1/godot-agents/blob/main/custom_LL_egg_game/Custom_LL.py)
+- [Egg Game: PPO_agent.py](https://github.com/luwke1/godot-agents/blob/main/custom_LL_egg_game/PPO_agent.py)
+- [Egg Game: PPO_trainer.py](https://github.com/luwke1/godot-agents/blob/main/custom_LL_egg_game/PPO_trainer.py)
+- [Egg Game: Q_agent.py](https://github.com/luwke1/godot-agents/blob/main/custom_LL_egg_game/Q_agent.py)
+- [Egg Game: wrapper.py](https://github.com/luwke1/godot-agents/blob/main/custom_LL_egg_game/wrapper.py)
+- [Custom_LL_and_agents_documentation.pdf](https://github.com/luwke1/godot-agents/blob/main/documents/custom_LL_and_agents_documentation.pdf)
 
 ## Retrospective Summary
 ### What Went Well:
