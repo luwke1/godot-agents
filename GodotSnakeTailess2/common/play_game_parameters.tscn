@@ -61,7 +61,7 @@ offset_top = 4.816
 offset_right = 3.504
 offset_bottom = 12.816
 scale = Vector2(2.15885, 1.04974)
-text = "\"p\"  == Back"
+text = "\"p\"  == Stop and save training"
 
 [node name="Label" type="Label" parent="."]
 anchors_preset = -1

@@ -11,26 +11,23 @@ offset_top = 106.0
 offset_right = 618.0
 offset_bottom = 311.0
 scale = Vector2(1.71775, 1.45614)
-text = "This is your splash screen for your own Open Team Agent. 
+text = "Either run an already trained DQN Agent
 
-The  button link from this should run your own Agent and show your sprite
-doing its thing, whatever that is. 
-
-NOTE: you must change the SYNCH node in \"Robot\"  to \"training\" before playing. "
+Or Train you DQN Agent"
 
 [node name="Button3" type="Button" parent="."]
 offset_left = 594.0
 offset_top = 56.0
 offset_right = 824.0
 offset_bottom = 87.0
-text = "Train your Open Team Agent"
+text = "Train your DQN Agent"
 
 [node name="Button" type="Button" parent="."]
 offset_left = 311.0
 offset_top = 57.0
 offset_right = 532.0
 offset_bottom = 88.0
-text = "Run your Open Team Agent"
+text = "Run your DQN Agent"
 
 [node name="Button2" type="Button" parent="."]
 offset_left = 442.0

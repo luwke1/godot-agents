@@ -1,9 +1,9 @@
 extends Node2D
-
+@onready var label = $Label
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	label.text = "The agent won! \nIt successfully got " + str(Global.bombs) + " points"
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

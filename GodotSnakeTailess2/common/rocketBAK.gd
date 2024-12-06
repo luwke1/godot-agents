@@ -1,119 +1,147 @@
 extends RigidBody3D
 
+# Time until the bomb detonates
 var bombTime = 20
 
+# Sensitivity for mouse input
 var mouse_sensitivity := 0.001
 var twist_input := 0.0
 var pitch_input := 0.0
 
+# Global positions and velocities
 var launch_site = Global.launch_site
 var rocket_position = Global.rocket_position
 var rocket_speed = Global.rocket_velocity
 var daisey_position = Global.power_node_position
 
+# Maximum allowed time for an episode
 var max_time := 120.0
 
+# Time tracking variables
 var start_time = Time.get_ticks_msec()
 var current_time = 0
 
+# Ready variables for pivot points in the scene
 @onready var twist_pivot := $TwistPvot
 @onready var pitch_pivot = $TwistPvot/PitchPivot
 
-# Import NNET
+# Import and initialize neural networks for DQN
 var q_network : NNET = NNET.new([2, 128, 8], false)
 var target_network : NNET = NNET.new([2, 128, 8], false)
 
-# Variables for DQN implementation
-var epsilon := 1.0 # Epsilon for epsilon-greedy policy
-var gamma := 0.9 # Discount factor
-var replay_buffer := [] # Experience replay buffer
-var max_buffer_size := 1200
-var batch_size := 64
-var target_update_frequency := 100
-var step_count := 0 # Count the number of steps taken
+# Variables for Deep Q-Network (DQN) implementation
+var epsilon := 1.0 # Exploration rate for epsilon-greedy policy
+var gamma := 0.9 # Discount factor for future rewards
+var replay_buffer := [] # Buffer to store past experiences
+var max_buffer_size := 1200 # Maximum size of the replay buffer
+var batch_size := 64 # Number of experiences to sample for training
+var target_update_frequency := 100 # Frequency to update target network
+var step_count := 0 # Counter for the number of steps taken
 var state = [] # Current state of the agent
 
+# Variables to store previous state information
 var previous_distance = 0.0
 var previous_state = null
 var previous_action = null
 
-# Training frequency variables
+var episodes = 0 # Number of episodes completed
+
+# Variables to control training frequency
 var train_frequency := 6
 var train_counter := 0
 
 func _ready():
+	# Capture the mouse for input
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	linear_damp = 1.0  # Increased damping for quicker momentum decay
 	
-	# Initialize the q_network and target_network
+	# Initialize the Q-network with Adam optimizer and MSE loss
 	q_network.use_Adam(0.0005)
 	q_network.set_loss_function(BNNET.LossFunctions.MSE)
 	q_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 1)
 	q_network.set_function(BNNET.ActivationFunctions.identity, 2, 2)
 	
+	# Initialize the target network similarly
 	target_network.use_Adam(0.0005)
 	target_network.set_loss_function(BNNET.LossFunctions.MSE)
 	target_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 1)
 	target_network.set_function(BNNET.ActivationFunctions.identity, 2, 2)
 	
-	# Copy the weights to target_network to be an exact copy
+	# Synchronize target network with Q-network
 	target_network.assign(q_network)
 	
 	# Ensure initial positions are accurate
 	rocket_position = position
 	daisey_position = Global.power_node_position
 	
-	# Initialize previous_distance
+	# Initialize previous distance between rocket and daisey
 	previous_distance = (rocket_position - daisey_position).length()
 	
-	# Initialize previous_state
+	# Initialize the previous state
 	previous_state = get_state()
 	
+	# Load a pre-trained agent if the flag is set
 	if Global.team_agent_boolean:
 		load_agent()
 
+# Function to stop training and clear memory
+func stop_training():
+	replay_buffer.clear()
+	previous_state = null
+	previous_action = null
+	previous_distance = 0.0
+	print("Training has been stopped and memory cleared.")
+
 func _physics_process(delta):
+	# Update positions based on global variables
 	daisey_position = Global.power_node_position
 	rocket_position = position  # Update current position
 	
+	# Calculate elapsed time since start
+	current_time = (Time.get_ticks_msec() - start_time)/1000
+	
+	# If the cancel action is pressed, make the mouse visible
 	if Input.is_action_just_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	
-	if (Global.bombs == 120):
+	# Check if bomb count has reached 80 to end the game
+	if (Global.bombs == 80):
+		stop_training()
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		get_tree().change_scene_to_file("res://starting_folder/win_screen.tscn")
 	
-	# Update labels and other variables
+	# Update UI labels with current game state
 	var my_velocity = linear_velocity
 	$my_speed.text = str(round(my_velocity.length()))
 	$my_height.text = str(round(rocket_position.y))
 	$my_bombs.text = str(Global.bombs)
 	$power_node_location.text = str(round(Global.power_node_position.length()))
-	current_time = (Time.get_ticks_msec() - start_time)/1000
+	
 	$elapsed_time.text = str(round(current_time))
 	
-	# If we have a previous state and action, calculate the reward
+	# If there is a previous state and action, calculate the reward
 	if previous_state != null and previous_action != null:
-		
-		# Save the current distance
+		# Calculate current distance to the daisey
 		var current_distance = (rocket_position - daisey_position).length()
 		
-		# Get reward value for new location
+		# Get the reward based on distance change
 		var reward = get_reward(previous_distance, current_distance)
 		
+		# Get the current state after taking the action
 		var current_state = get_state()
 		var done = is_done()
 		
-		# Store experience in the replay buffer
+		# Store the experience in the replay buffer
 		store_experience(previous_state, previous_action, reward, current_state, false)
 		
-		# Training the network less frequently to reduce lag
+		# Increment training counter and train DQN at specified frequency
 		train_counter += 1
 		if train_counter % train_frequency == 0 and replay_buffer.size() >= batch_size:
 			train_dqn()
 			train_counter = 0  # Reset the counter
 		
-		# Update epsilon to reduce exploration over time
-		#print(epsilon)
+		# Decay epsilon to reduce exploration over time
+		# print(epsilon)  # Debugging line (commented out)
 		epsilon = max(0.1, epsilon * 0.999)
 		
 		# Update the target network periodically
@@ -121,41 +149,43 @@ func _physics_process(delta):
 		if step_count % target_update_frequency == 0:
 			target_network.assign(q_network)
 		
+		# If the episode is done, reset the agent
 		if done:
 			reset_agent()
 		else:
-			# Prepare for the next iteration
+			# Prepare for the next iteration by updating previous state and distance
 			previous_state = current_state
 			previous_distance = current_distance
 	else:
-		# First time initialization
+		# First time initialization of previous state and distance
 		previous_state = get_state()
 		previous_distance = (rocket_position - daisey_position).length()
 	
-	# DQN Agent decision-making
+	# Agent chooses an action based on the current state
 	var action = choose_action(previous_state)
 	
-	# Execute the action
+	# Execute the chosen action
 	execute_action(action)
 	
-	# Update previous_action for the next iteration
+	# Store the action for the next iteration's reward calculation
 	previous_action = action
 
-# Uses the q_network to predict the best action and takes it
+# Chooses an action using epsilon-greedy policy
 func choose_action(current_state):
 	var action = 0
-	# Choose random action or best action
+	# Decide whether to explore or exploit
 	if randf() < epsilon:
+		# Explore: choose a random action
 		action = randi() % 8 
 	else:
-		# Run the current state through the q_network and propagate
+		# Exploit: choose the best action based on Q-network's prediction
 		q_network.set_input(current_state)
 		q_network.propagate_forward()
 		
 		# Get the predicted Q-values from the network
 		var q_values = q_network.get_output()
 		
-		# If there are q values, select the action with the highest Q-value
+		# Select the action with the highest Q-value
 		if q_values.size() > 0:
 			var max_q_value = q_values.max()
 			var best_actions = []
@@ -163,42 +193,39 @@ func choose_action(current_state):
 				if q_values[i] == max_q_value:
 					best_actions.append(i)
 					
-			# If theres a best action or multiple, pick a random best action
+			# If multiple best actions, choose one randomly
 			if best_actions.size() > 0:
 				action = best_actions[randi() % best_actions.size()]
-			else: # Otherwise just again pick a random action
+			else:
+				# Fallback to a random action if no best action found
 				action = randi() % 8
 		else:
+			# Fallback to a random action if Q-values are empty
 			action = randi() % 8
 	
-	# Return the action selected
+	# Return the selected action
 	return action
 
-# Function for storing experiences in the replay buffer
+# Stores an experience tuple in the replay buffer
 func store_experience(state, action, reward, next_state, done):
+	# Ensure the replay buffer does not exceed maximum size
 	if replay_buffer.size() >= max_buffer_size:
 		replay_buffer.pop_front()
+	# Append the new experience
 	replay_buffer.append([state, action, reward, next_state, done])
 
-# Function for grabbing the agents current state and view of the world
+# Retrieves the current state of the agent
 func get_state() -> Array:
 	var norm_factor = 50.0
 	rocket_speed = linear_velocity
+	# Calculate the vector distance to the daisey power node
 	var distance_to_coin = daisey_position - rocket_position
-	#print([
-		##rocket_position.x / norm_factor,
-		##rocket_position.z / norm_factor,
-		##rocket_speed.x / norm_factor,
-		##rocket_speed.z / norm_factor,
-		#distance_to_coin.x / norm_factor,
-		#distance_to_coin.z / norm_factor
-	#])
 	return [
 		distance_to_coin.x / norm_factor,
 		distance_to_coin.z / norm_factor
 	]
 
-# Function to execute an action and move the agent in a direction
+# Executes the given action by applying force to the agent
 func execute_action(action: int) -> void:
 	var force = Vector3()
 	match action:
@@ -218,13 +245,14 @@ func execute_action(action: int) -> void:
 			force = Vector3(1, 0, 1).normalized()
 		7: # Move back-left
 			force = Vector3(-1, 0, 1).normalized()
+	# Apply the calculated force to the center of mass
 	apply_central_force(force * 40) 
-	# Limit the velocity
+	# Limit the agent's velocity to prevent excessive speed
 	var max_speed = 10.0 
 	if linear_velocity.length() > max_speed:
 		linear_velocity = linear_velocity.normalized() * max_speed
 
-# Function for getting the reward for the current state
+# Calculates the reward based on the agent's movement and state
 func get_reward(previous_distance, current_distance):
 	var distance_reward = 0
 	var bounds = 50.0
@@ -232,13 +260,14 @@ func get_reward(previous_distance, current_distance):
 	var goal_reward = 0.0
 
 	if Global.reward_for_pickup:
-		# The coin was just picked up
-		Global.reward_for_pickup = false  # Reset the flag
-		goal_reward += 40  # Provide the goal reward
-		# Reset previous_distance to prevent large negative reward
+		# Reward for picking up the coin
+		episodes += 1
+		Global.reward_for_pickup = false  # Reset the pickup flag
+		goal_reward += 40  # Add goal reward
+		# Reset previous_distance to avoid large negative rewards
 		previous_distance = (rocket_position - daisey_position).length()
 	else:
-		# Calculate the distance reward as usual
+		# Calculate reward based on distance improvement
 		distance_reward = (previous_distance - current_distance) * 25
 
 		if current_distance > previous_distance:
@@ -246,51 +275,51 @@ func get_reward(previous_distance, current_distance):
 		else:
 			distance_reward += 1   # Reward for moving closer
 
-	# Check if the agent is out of bounds
+	# Penalize if the agent goes out of bounds
 	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
-		goal_reward -= 50  # Penalty for going out of bounds
+		episodes += 1
+		goal_reward -= 50  # Penalty for out of bounds
 
-	# Combine all the rewards for the current state and return
+	# Combine all reward components
 	var reward = distance_reward + time_penalty + goal_reward
-	#print("Reward: ", reward)
+	# print("Reward: ", reward)  # Debugging line (commented out)
 	return reward
 
-
-# Function to determine if episode is done
+# Determines if the current episode is done
 func is_done() -> bool:
 	var bounds = 50.0
-	# Check if the agent is out of bounds
+	# Check if the agent has moved out of bounds
 	if abs(rocket_position.x) > bounds or abs(rocket_position.z) > bounds:
 		print("Agent went out of bounds.")
 		return true
 	return false
 
-# Helper function just to reset the world and agent
+# Resets the agent and environment for a new episode
 func reset_agent() -> void:
-	# Reset agent position and relevant variables
+	# Reset global variables and agent's state
 	Global.bombs = 30
-	position = launch_site  # Reset position to the launch site or any initial position
+	position = launch_site  # Reset position to the launch site
 	rocket_position = position
-	linear_velocity = Vector3(0, 0, 0)  # Reset velocity to zero
-	start_time = Time.get_ticks_msec()  # Optionally reset the time
-	previous_state = get_state()  # Reinitialize the state
+	linear_velocity = Vector3(0, 0, 0)  # Reset velocity
+	start_time = Time.get_ticks_msec()  # Reset start time
+	previous_state = get_state()  # Reinitialize state
 	previous_distance = (rocket_position - daisey_position).length()
-	previous_action = null  # Reset previous action
+	previous_action = null  # Clear previous action
 	print("Agent has been reset to the starting position.")
 
-# Function to train the q_network on experiences in the replay buffer
+# Trains the Q-network using experiences from the replay buffer
 func train_dqn() -> void:
-	# Shuffle the replay buffer and select a random batch of experiences without replacement
+	# Create a shuffled copy of the replay buffer
 	var shuffled_buffer = replay_buffer.duplicate()
 	shuffled_buffer.shuffle()
 
-	# Get the first 'batch_size' experiences from the shuffled buffer
+	# Select a random batch of experiences
 	var batch = shuffled_buffer.slice(0, batch_size)
 	
 	var batch_states = []
 	var batch_targets = []
 	
-	# Process the batch
+	# Process each experience in the batch
 	for experience in batch:
 		var state = experience[0]
 		var action = experience[1]
@@ -298,12 +327,12 @@ func train_dqn() -> void:
 		var next_state = experience[3]
 		var done = experience[4]
 		
-		# Forward propagate through the Q-network for the current experience state
+		# Predict Q-values for the current state using Q-network
 		q_network.set_input(state)
 		q_network.propagate_forward()
 		var q_values = q_network.get_output()
 		
-		# Forward propagate through the target network for the next state
+		# Predict Q-values for the next state using target network
 		target_network.set_input(next_state)
 		target_network.propagate_forward()
 		var target_output = target_network.get_output()
@@ -311,32 +340,31 @@ func train_dqn() -> void:
 		# Get the maximum Q-value for the next state
 		var max_next_q = target_output.max() if target_output.size() > 0 else 0
 		
-		# Compute the target Q-value
+		# Compute the target Q-value using the Bellman equation
 		var target_q_value = reward
 		if not done:
 			target_q_value += gamma * max_next_q
 		
-		# Update the target Q-values
+		# Update the Q-value for the taken action
 		var target_q_values = q_values.duplicate()
 		target_q_values[action] = target_q_value
 		
-		# Append the state and the updated target Q-values to the batch
+		# Append the state and updated Q-values to the training batch
 		batch_states.append(state)
 		batch_targets.append(target_q_values)
 	
-	#print(q_network.get_loss(batch_states, batch_targets))
+	# print(q_network.get_loss(batch_states, batch_targets))  # Debugging line (commented out)
 	
-	# Train the Q-network on the entire batch of the target q values
+	# Train the Q-network with the batch of states and target Q-values
 	q_network.train(batch_states, batch_targets)
 
-
-# Function to save the trained agent
+# Saves the trained agent's network weights and parameters to disk
 func save_agent():
-	# Paths for saving data
+	# Define paths for saving weights and agent data
 	var weights_path = "user://q_network_weights.dat"
 	var agent_data_path = "user://agent_data.save"
 
-	# Save the Q-network weights using FileAccess
+	# Save the Q-network weights
 	var weights_file = FileAccess.open(weights_path, FileAccess.WRITE)
 	if weights_file == null:
 		push_error("Failed to open weights file for writing: ", weights_path)
@@ -344,7 +372,7 @@ func save_agent():
 		q_network.save_binary(weights_path)
 		print("Q-network weights saved to ", weights_path)
 
-	# Prepare agent parameters to save
+	# Prepare agent parameters for saving
 	var agent_data = {
 		"epsilon": epsilon,
 		"gamma": gamma,
@@ -352,7 +380,7 @@ func save_agent():
 		"train_counter": train_counter,
 	}
 
-	# Serialize and save agent parameters using FileAccess
+	# Serialize and save agent parameters
 	var agent_file = FileAccess.open(agent_data_path, FileAccess.WRITE)
 	if agent_file == null:
 		push_error("Failed to open agent data file for writing: ", agent_data_path)
@@ -361,31 +389,31 @@ func save_agent():
 		agent_file.close()
 		print("Agent parameters saved to ", agent_data_path)
 
-# Function to load a trained agent
+# Loads a trained agent's network weights and parameters from disk
 func load_agent():
-	# Reset environment variables
+	# Reset environment variables before loading
 	previous_state = get_state()
 	previous_distance = (rocket_position - daisey_position).length()
 	previous_action = null
 	
 	print("Agent states reset after loading.")
-	# Paths for loading data
+	# Define paths for loading weights and agent data
 	var weights_path = "user://q_network_weights.dat"
 	var agent_data_path = "user://agent_data.save"
 
-	# Load the Q-network weights using FileAccess
+	# Load the Q-network weights
 	if not FileAccess.file_exists(weights_path):
 		push_error("Weights file does not exist: ", weights_path)
 	else:
-		# Directly call load_data without capturing a return value
+		# Load weights directly into the Q-network
 		q_network.load_data(weights_path)
 		print("Q-network weights loaded from ", weights_path)
 
-		# Assign loaded weights to the target network
+		# Synchronize the target network with the loaded Q-network
 		target_network.assign(q_network)
 		print("Target network synchronized with Q-network.")
 
-	# Load agent parameters using FileAccess
+	# Load agent parameters
 	if not FileAccess.file_exists(agent_data_path):
 		push_error("Agent data file does not exist: ", agent_data_path)
 	else:
@@ -396,18 +424,18 @@ func load_agent():
 			var agent_data = agent_file.get_var()
 			agent_file.close()
 
-			# Validate loaded data
+			# Validate the loaded data format
 			if typeof(agent_data) != TYPE_DICTIONARY:
 				push_error("Agent data corrupted or invalid format.")
 				return
 
-			# Restore agent parameters
+			# Restore agent parameters from the loaded data
 			epsilon = agent_data.get("epsilon", 1.0)
 			gamma = agent_data.get("gamma", 0.9)
 			step_count = agent_data.get("step_count", 0)
 			train_counter = agent_data.get("train_counter", 0)
 			print("Agent parameters loaded from ", agent_data_path)
 
-			# Optionally, set epsilon to a low value for inference (exploit learned policy)
+			# Optionally set epsilon to a lower value for exploitation
 			epsilon = 0.1
 			print("Epsilon set to ", epsilon, " for exploitation.")

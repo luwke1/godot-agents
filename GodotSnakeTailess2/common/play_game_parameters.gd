@@ -6,18 +6,19 @@ extends Node3D
 func _ready():
 	print("Hello from the playing screen")
 	print("human player boolean = ", Global.human_player_boolean)
-	print("q-Agent boolean = ", Global.q_agent_boolean)
+	print("DQN Agent boolean = ", Global.dqn_agent_boolean)
 	print("function Agnet boolean = ", Global.function_agent_boolean) 
-	print("team Agent boolean = ", Global.team_agent_boolean)
-
+	
+	
 	Global.bombs = 30
 	$powerNode.position = Vector3(6,2,-7)
+	Global.power_node_position = Vector3(6,2,-7)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-
+	
 	if Input.is_key_pressed(KEY_P):
 		Global.human_player_boolean = false
 		Global.team_agent_boolean = false

@@ -16,6 +16,7 @@ var time_since_start = 0
 
 var function_agent_boolean = false
 var q_agent_boolean = false
+var dqn_agent_boolean = false
 var team_agent_boolean = false
 var train_team_agent_boolean = false
 var human_player_boolean = false

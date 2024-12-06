@@ -1,6 +1,13 @@
+res://common/play_game_parameters.tscn
+res://common/play_game_parameters.gd
 res://starting_folder/main_menu.tscn
 res://starting_folder/win_screen.tscn
-res://common/play_game_parameters.tscn
 res://agents/team_agent/team_agent_start.tscn
 res://agents/team_agent/RML_agent_run.tscn
+res://common/power_node.tscn
+res://starting_folder/docs.tscn
+res://starting_folder/main_menu.gd
+res://common/global_variables.gd
+res://common/userRocketBAK.gd
+res://common/rocket.tscn
 res://common/rocketBAK.gd

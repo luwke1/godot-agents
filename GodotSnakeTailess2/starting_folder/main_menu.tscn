@@ -43,9 +43,10 @@ text = "Play Game by Human"
 layout_mode = 2
 text = "Run Function Agent"
 
-[node name="Run Q Agent" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="Run DQN agent" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Run Team Agent"
+text = "Run DQN Agent
+"
 
 [node name="Run Agent" type="Button" parent="MarginContainer/VBoxContainer"]
 visible = false
@@ -89,6 +90,6 @@ and without walls. "
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Docs" to="." method="_on_docs_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/play_menu" to="." method="_on_play_menu_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Run Function Agent" to="." method="_on_run_function_agent_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Run Q Agent" to="." method="_on_run_q_agent_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Run DQN agent" to="." method="_on_run_dqn_agent_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Run Agent" to="." method="_on_run_agent_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]

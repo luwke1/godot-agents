@@ -31,10 +31,9 @@ func _on_run_agent_pressed():	# NOT USED
 	get_tree().change_scene_to_file("res://agents/team_agent/team_agent_start.tscn")
 	# note that this button is for the teams own Agent - aka the Open Agent or the Team Agent
 
-func _on_run_q_agent_pressed():		# This is to the Team Agent splash start screen
-	Global.q_agent_boolean = true
-	get_tree().change_scene_to_file("res://agents/team_agent/team_agent_start.tscn")
-	
-
 func _on_docs_pressed():
 	get_tree().change_scene_to_file("res://starting_folder/docs.tscn")
+
+func _on_run_dqn_agent_pressed() -> void:
+	Global.dqn_agent_boolean = true
+	get_tree().change_scene_to_file("res://agents/team_agent/team_agent_start.tscn")

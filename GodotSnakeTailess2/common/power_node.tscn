@@ -17,8 +17,8 @@ size = Vector3(0.5, 0.5, 0.5)
 
 [node name="powerNode" type="RigidBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
-max_contacts_reported = 13
 contact_monitor = true
+max_contacts_reported = 13
 script = ExtResource("1_huset")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
