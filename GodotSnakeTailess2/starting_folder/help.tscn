@@ -1,0 +1,66 @@
+[gd_scene load_steps=2 format=3 uid="uid://du0385l2kf8ch"]
+
+[ext_resource type="Script" path="res://starting_folder/help.gd" id="1_vch1m"]
+
+[node name="Help" type="Node2D"]
+position = Vector2(0, 2)
+script = ExtResource("1_vch1m")
+
+[node name="goal" type="Label" parent="."]
+offset_left = 32.0
+offset_top = 248.0
+offset_right = 299.0
+offset_bottom = 453.0
+size_flags_horizontal = 0
+text = "Goal for This Task :
+Drive the tank through the field collecting power daiseys. You have 30 seconds to get as many as you can.  Once 30 seconds are up you have 5 seconds to park back onto the starting area. 
+
+Note that this is the first half of the full tank game. 
+
+"
+autowrap_mode = 2
+
+[node name="Back" type="Button" parent="."]
+offset_left = 441.0
+offset_top = 596.0
+offset_right = 882.0
+offset_bottom = 627.0
+text = "Return to main menu"
+
+[node name="movement" type="Label" parent="."]
+offset_left = 463.0
+offset_top = 10.0
+offset_right = 757.0
+offset_bottom = 371.0
+size_flags_horizontal = 0
+text = "Movement  keys:
+w = go forward
+s = go aft
+a = go  port
+d = go starboard
+< = turn turret counterclockwise
+> = turn turret clockwise
+m = wait 1  second
+p = return to main screen
+"
+autowrap_mode = 2
+
+[node name="story" type="RichTextLabel" parent="."]
+offset_left = 28.0
+offset_top = 31.0
+offset_right = 447.0
+offset_bottom = 245.0
+text = "Story:
+You must  collect power daiseys in the field.  You have 30 seconds to collect as many as you can. Then you have a maximum of 5 seconds to return to the starting platform.   in this version there are  are no enemies, no walls.  Only one daisey will appear at a time.  If you fall of the edge of the platform there is no returning.  Good Luck. "
+
+[node name="notes" type="RichTextLabel" parent="."]
+offset_left = 462.0
+offset_top = 304.0
+offset_right = 749.0
+offset_bottom = 379.0
+text = "Notes on Parameters:
+The starting site is  (x,y,z)  = (0,0,0)
+
+"
+
+[connection signal="pressed" from="Back" to="." method="_on_back_pressed"]

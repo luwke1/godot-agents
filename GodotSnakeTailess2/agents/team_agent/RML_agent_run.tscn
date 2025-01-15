@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://xugvs37fbikc"]
+
+[ext_resource type="Script" path="res://agents/team_agent/RML_agent_run.gd" id="1_pubq2"]
+
+[node name="RML_agent_run" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_pubq2")
+
+[node name="Quit" type="Button" parent="."]
+layout_mode = 2
+offset_left = 276.0
+offset_top = 526.0
+offset_right = 724.0
+offset_bottom = 557.0
+text = "Back to main screen
+"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 246.0
+offset_top = 289.0
+offset_right = 770.0
+offset_bottom = 468.0
+scale = Vector2(1.04, 1)
+text = "When the game is running you can still use the \"P\" key to exit out. 
+
+This example RML  Agent does not work until an Agent is included. 
+
+Modify these notes for the user. "
+
+[node name="Button to rml page" type="Button" parent="."]
+layout_mode = 0
+offset_left = 380.0
+offset_top = 145.0
+offset_right = 641.0
+offset_bottom = 246.0
+text = "RML Button to placeholder page "
+
+[connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="Button to rml page" to="." method="_on_button_to_rml_page_pressed"]
