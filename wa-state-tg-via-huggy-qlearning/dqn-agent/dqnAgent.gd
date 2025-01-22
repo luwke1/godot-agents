@@ -84,6 +84,7 @@ func _physics_process(delta):
 	agent_position = self.position
 	coin_position = get_closest_coin()
 	
+	
 	# If there is a previous state and action, calculate the reward
 	if previous_state != null and previous_action != null:
 		# Calculate current distance to the daisey
@@ -91,6 +92,8 @@ func _physics_process(delta):
 		
 		# Get the reward based on distance change
 		var reward = get_reward(previous_distance, current_distance, previous_action)
+		
+		previous_distance = current_distance
 		
 		# Get the current state after taking the action
 		var current_state = get_state()
@@ -107,7 +110,7 @@ func _physics_process(delta):
 		
 		# Decay epsilon to reduce exploration over time
 		decay_counter += 1
-		if decay_counter >= 30: # e.g. once per second
+		if decay_counter >= 10: # e.g. once per second
 			epsilon = max(0.1, epsilon * 0.999)
 			decay_counter = 0
 		
@@ -124,7 +127,7 @@ func _physics_process(delta):
 	if is_done():
 		# If we're done, store an experience with done = true and an extra penalty
 		var current_state_done = get_state()
-		store_experience(previous_state, previous_action, -3.0, current_state_done, true)
+		store_experience(previous_state, previous_action, -1.5, current_state_done, true)
 
 		# End of episode: reset
 		reset_agent()
@@ -228,11 +231,11 @@ func get_reward(prev_dist: float, curr_dist: float, action) -> float:
 
 	# 1. Reward movement toward the coin
 	var distance_diff = prev_dist - curr_dist
-	reward += distance_diff * 0.001  # scale as needed
+	reward += distance_diff * 0.1  # scale as needed
 	
 	#print(vision["RayCast_Up"])
 	if vision["RayCast_Up"] < 0.5 and (action in [2, 3, 4]):
-		reward -= 1
+		reward -= 0.1
 	
 	#print(reward)
 	# 2. Living cost
@@ -246,7 +249,7 @@ func get_reward(prev_dist: float, curr_dist: float, action) -> float:
 
 	if just_collected_coin:
 		# Give a larger bonus for actual coin pickup
-		reward += 5
+		reward += 10
 	
 	print(reward)
 	return reward
@@ -324,43 +327,52 @@ func train_dqn() -> void:
 	var batch_states = []
 	var batch_targets = []
 	
-	# Process each experience in the batch
 	for experience in batch:
-		var state = experience[0]
-		var action = experience[1]
-		var reward = experience[2]
-		var next_state = experience[3]
-		var done = experience[4]
+		var state     = experience[0]
+		var action    = experience[1]
+		var reward    = experience[2]
+		var next_state= experience[3]
+		var done      = experience[4]
 		
-		# Predict Q-values for the current state using Q-network
+		# -- 1) Get Q-values for the current state (online network) --
 		q_network.set_input(state)
 		q_network.propagate_forward()
 		var q_values = q_network.get_output()
 		
-		# Predict Q-values for the next state using target network
+		# -- 2) Double DQN logic: pick the best next action using the online net --
+		q_network.set_input(next_state)
+		q_network.propagate_forward()
+		var next_q_online = q_network.get_output()
+		
+		# Find argmax action from the online network
+		var best_next_action = 0
+		var max_val = -INF
+		for i in range(next_q_online.size()):
+			if next_q_online[i] > max_val:
+				max_val = next_q_online[i]
+				best_next_action = i
+		
+		# -- 3) Evaluate that chosen action's Q-value using the target net --
 		target_network.set_input(next_state)
 		target_network.propagate_forward()
 		var target_output = target_network.get_output()
 		
-		# Get the maximum Q-value for the next state
-		var max_next_q = target_output.max() if target_output.size() > 0 else 0
+		var double_q_value = target_output[best_next_action]
 		
-		# Compute the target Q-value using the Bellman equation
+		# -- 4) Compute the Bellman target --
 		var target_q_value = reward
 		if not done:
-			target_q_value += gamma * max_next_q
+			target_q_value += gamma * double_q_value
 		
-		# Update the Q-value for the taken action
+		# -- 5) Update the Q-value for the chosen action in q_values --
 		var target_q_values = q_values.duplicate()
 		target_q_values[action] = target_q_value
 		
-		# Append the state and updated Q-values to the training batch
+		# -- 6) Append the (state, updated Q-values) to our training batch --
 		batch_states.append(state)
 		batch_targets.append(target_q_values)
 	
-	#print(q_network.get_loss(batch_states, batch_targets))
-	
-	# Train the Q-network with the batch of states and target Q-values
+	# -- 7) Finally, train the online Q-network with the updated Q-value targets --
 	q_network.train(batch_states, batch_targets)
 
 func apply_gravity(delta):

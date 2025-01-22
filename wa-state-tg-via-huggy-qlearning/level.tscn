@@ -22,7 +22,7 @@ scale = Vector2(1.0654, 0.879622)
 polygon = PackedVector2Array(0, 0, 1152, 0, 1152, 96, 0, 96)
 
 [node name="platform" parent="." instance=ExtResource("1_rbgqf")]
-position = Vector2(64, 384)
+position = Vector2(192, 480)
 
 [node name="platform2" parent="." instance=ExtResource("1_rbgqf")]
 position = Vector2(768, 384)
@@ -66,7 +66,7 @@ position = Vector2(928, 352)
 position = Vector2(544, 128)
 
 [node name="collectible3" parent="." instance=ExtResource("3_7l7rg")]
-position = Vector2(224, 352)
+position = Vector2(352, 448)
 
 [node name="platform4" parent="." instance=ExtResource("1_rbgqf")]
 position = Vector2(0, 256)
@@ -75,3 +75,6 @@ rotation = 1.57079
 [node name="platform5" parent="." instance=ExtResource("1_rbgqf")]
 position = Vector2(1280, 256)
 rotation = 1.57079
+
+[node name="collectible4" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(128, 544)
