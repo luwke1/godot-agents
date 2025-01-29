@@ -33,4 +33,14 @@ func _on_quit_pressed():
 
 
 func _on_end_run_and_quit_pressed():
+	var player = get_parent().get_node("level/player")
+	if player:
+		if Globals.control_type == "train":
+			if player.has_method("save_agent"):
+				player.save_agent()
+				print("Saving agent state...")
+			Globals.control_type == ""
+		elif Globals.control_type == "agent":
+			if player.has_method("stop_training"):
+				player.stop_training()
 	get_tree().change_scene_to_file("res://intro.tscn")

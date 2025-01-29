@@ -44,6 +44,8 @@ var level
 
 var just_collected_coin = false
 
+var TIME_LIMIT = 60
+
 var decay_counter = 0
 
 # ---- NEW VARIABLES FOR EPISODE CONTROL ----
@@ -52,6 +54,8 @@ var initial_position = Vector2()  # Will set in _ready()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	stop_training()
+	
 	level = get_parent()
 	
 	 # Store the agent's initial position to reset later
@@ -71,6 +75,10 @@ func _ready() -> void:
 	
 	# Synchronize target network with Q-network
 	target_network.assign(q_network)
+	
+	# Load a pre-trained agent if the flag is set
+	if Globals.control_type == "agent":
+		load_agent()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
@@ -83,7 +91,6 @@ func _physics_process(delta):
 	# Update positions based on global variables
 	agent_position = self.position
 	coin_position = get_closest_coin()
-	
 	
 	# If there is a previous state and action, calculate the reward
 	if previous_state != null and previous_action != null:
@@ -110,7 +117,7 @@ func _physics_process(delta):
 		
 		# Decay epsilon to reduce exploration over time
 		decay_counter += 1
-		if decay_counter >= 10: # e.g. once per second
+		if decay_counter >= 30: # e.g. once per second
 			epsilon = max(0.1, epsilon * 0.999)
 			decay_counter = 0
 		
@@ -124,15 +131,16 @@ func _physics_process(delta):
 		previous_distance = (agent_position - coin_position).length()
 	
 	# --- Check if we're done (no coin in 10 seconds) ---
-	if is_done():
-		# If we're done, store an experience with done = true and an extra penalty
-		var current_state_done = get_state()
-		store_experience(previous_state, previous_action, -1.5, current_state_done, true)
+	if Globals.control_type != "agent":
+		if is_done():
+			# If we're done, store an experience with done = true and an extra penalty
+			var current_state_done = get_state()
+			store_experience(previous_state, previous_action, -2, current_state_done, true)
 
-		# End of episode: reset
-		reset_agent()
-		episodes += 1
-		return  # Skip and reset agent
+			# End of episode: reset
+			reset_agent()
+			episodes += 1
+			return  # Skip and reset agent
 	
 	# Agent chooses an action based on the current state
 	var action = choose_action(previous_state)
@@ -147,9 +155,17 @@ func _physics_process(delta):
 
 func is_done() -> bool:
 	# If no coin collected in 10 seconds, let's end the episode
-	if time_since_last_coin_collection >= 10.0:
+	if time_since_last_coin_collection >= TIME_LIMIT:
 		return true
 	return false
+
+# Function to stop training and clear memory
+func stop_training():
+	replay_buffer.clear()
+	previous_state = null
+	previous_action = null
+	previous_distance = 0.0
+	print("Training has been stopped and memory cleared.")
 
 func reset_agent():
 	# Reset position and velocity
@@ -228,30 +244,41 @@ func update_vision():
 
 func get_reward(prev_dist: float, curr_dist: float, action) -> float:
 	var reward = 0.0
-
-	# 1. Reward movement toward the coin
-	var distance_diff = prev_dist - curr_dist
-	reward += distance_diff * 0.1  # scale as needed
 	
-	#print(vision["RayCast_Up"])
-	if vision["RayCast_Up"] < 0.5 and (action in [2, 3, 4]):
-		reward -= 0.1
+	# Distance-based reward (exponential)
+	var distance_reward = exp(-curr_dist/500)  # Scale based on level size
+	reward += distance_reward * 0.5
+	
+	# Movement-based rewards
+	if abs(velocity.x) > 50:
+		reward += 0.02  # Reward for maintaining momentum
+		
+	if curr_dist < prev_dist:
+		reward += (prev_dist - curr_dist) * 0.02
+	else:
+		reward -= (curr_dist - prev_dist) * 0.03
+	
+	print(vision["RayCast_Left"])
+	# Check raycasts for walls (values closer to 0 mean near a wall)
+	for dir in ["Right", "Left"]: # Check relevant directions
+		if vision["RayCast_"+dir] < 0.4: # Very close to wall
+			reward -= 0.1
+			if (dir == "Right" and action == 0) or (dir == "Left" and action == 1):
+				reward -= 0.5 # Extra penalty for moving into wall
+
+	# Successful jump reward
+	if action in [2,3,4] and not is_on_floor() and velocity.y < 0:
+		reward += 0.1
+
+	# Coin collection bonus
+	if just_collected_coin:
+		reward += 15
+		time_since_last_coin_collection = 0  # Reset timer
+	
+	# Time penalty (increases over time)
+	reward -= time_since_last_coin_collection * 0.005
 	
 	#print(reward)
-	# 2. Living cost
-	reward -= 0.001
-
-	# 3. Nearness bonus
-	if curr_dist < 30:
-		reward += 0.1
-	if curr_dist < 10:
-		reward += 0.5
-
-	if just_collected_coin:
-		# Give a larger bonus for actual coin pickup
-		reward += 10
-	
-	print(reward)
 	return reward
 
 func get_closest_coin() -> Vector2:
@@ -389,3 +416,82 @@ func _on_area_2d_body_entered(body):
 
 		# Set your reward trigger
 		just_collected_coin = true
+
+
+# Saves the trained agent's network weights and parameters to disk
+func save_agent():
+	# Define paths for saving weights and agent data
+	var weights_path = "user://q_network_weights.dat"
+	var agent_data_path = "user://agent_data.save"
+
+	# Save the Q-network weights
+	var weights_file = FileAccess.open(weights_path, FileAccess.WRITE)
+	if weights_file == null:
+		push_error("Failed to open weights file for writing: ", weights_path)
+	else:
+		q_network.save_binary(weights_path)
+		print("Q-network weights saved to ", weights_path)
+
+	# Prepare agent parameters for saving
+	var agent_data = {
+		"epsilon": epsilon,
+		"gamma": gamma,
+		"step_count": step_count,
+		"train_counter": train_counter,
+	}
+	stop_training()
+	# Serialize and save agent parameters
+	var agent_file = FileAccess.open(agent_data_path, FileAccess.WRITE)
+	if agent_file == null:
+		push_error("Failed to open agent data file for writing: ", agent_data_path)
+	else:
+		agent_file.store_var(agent_data)
+		agent_file.close()
+		print("Agent parameters saved to ", agent_data_path)
+	
+
+# Loads a trained agent's network weights and parameters from disk
+func load_agent():
+	print("Agent states reset after loading.")
+	# Define paths for loading weights and agent data
+	var weights_path = "user://q_network_weights.dat"
+	var agent_data_path = "user://agent_data.save"
+
+	# Load the Q-network weights
+	if not FileAccess.file_exists(weights_path):
+		push_error("Weights file does not exist: ", weights_path)
+	else:
+		# Load weights directly into the Q-network
+		q_network.load_data(weights_path)
+		print("Q-network weights loaded from ", weights_path)
+
+		# Synchronize the target network with the loaded Q-network
+		target_network.assign(q_network)
+		print("Target network synchronized with Q-network.")
+
+	# Load agent parameters
+	if not FileAccess.file_exists(agent_data_path):
+		push_error("Agent data file does not exist: ", agent_data_path)
+	else:
+		var agent_file = FileAccess.open(agent_data_path, FileAccess.READ)
+		if agent_file == null:
+			push_error("Failed to open agent data file for reading: ", agent_data_path)
+		else:
+			var agent_data = agent_file.get_var()
+			agent_file.close()
+
+			# Validate the loaded data format
+			if typeof(agent_data) != TYPE_DICTIONARY:
+				push_error("Agent data corrupted or invalid format.")
+				return
+
+			# Restore agent parameters from the loaded data
+			epsilon = agent_data.get("epsilon", 1.0)
+			gamma = agent_data.get("gamma", 0.9)
+			step_count = agent_data.get("step_count", 0)
+			train_counter = agent_data.get("train_counter", 0)
+			print("Agent parameters loaded from ", agent_data_path)
+
+			# Optionally set epsilon to a lower value for exploitation
+			epsilon = 0.1
+			print("Epsilon set to ", epsilon, " for exploitation.")
