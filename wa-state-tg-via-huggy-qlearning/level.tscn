@@ -25,15 +25,16 @@ polygon = PackedVector2Array(0, 0, 1152, 0, 1152, 96, 0, 96)
 position = Vector2(192, 480)
 
 [node name="platform2" parent="." instance=ExtResource("1_rbgqf")]
-position = Vector2(768, 384)
+position = Vector2(768, 416)
 
 [node name="platform3" parent="." instance=ExtResource("1_rbgqf")]
-position = Vector2(416, 192)
+position = Vector2(352, 256)
 
 [node name="player" parent="." instance=ExtResource("2_a4gyf")]
 position = Vector2(64, 544)
 script = ExtResource("4_8lb2m")
 speed = 200.0
+gravity_multiplier = 2.0
 
 [node name="RayCast_Down" type="RayCast2D" parent="player"]
 target_position = Vector2(0, 150)
@@ -60,7 +61,7 @@ target_position = Vector2(128, -128)
 target_position = Vector2(-128, -128)
 
 [node name="collectible" parent="." instance=ExtResource("3_7l7rg")]
-position = Vector2(928, 352)
+position = Vector2(928, 384)
 
 [node name="collectible2" parent="." instance=ExtResource("3_7l7rg")]
 position = Vector2(544, 128)
