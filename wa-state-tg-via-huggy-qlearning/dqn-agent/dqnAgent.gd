@@ -16,11 +16,11 @@ var target_network : NNET = NNET.new([11, 64, 64, 5], false)
 
 # Variables for Deep Q-Network (DQN) implementation
 var epsilon := 1.0    # Exploration rate for epsilon-greedy policy
-var gamma := 0.9      # Discount factor for future rewards
+var gamma := 0.95      # Discount factor for future rewards
 var replay_buffer := [] 
-var max_buffer_size := 1200
+var max_buffer_size := 5000
 var batch_size := 64
-var target_update_frequency := 100
+var target_update_frequency := 500
 var step_count := 0
 var state = []
 
@@ -87,12 +87,11 @@ func _physics_process(delta):
 	# If we have a previous state/action, compute a reward for the last step
 	if previous_state != null and previous_action != null:
 		var current_distance = (agent_position - coin_position).length()
-		var reward = get_reward(previous_distance, current_distance, previous_action)
-		previous_distance = current_distance
+		var reward = get_reward(current_distance, previous_action)
 		
 		# Gather the current state observations
 		var current_state = get_state()
-		print(current_state)
+		#print(current_state)
 		
 		# Check if the episode is done (only if Globals.control_type != "agent", as your code does)
 		var done = false
@@ -117,10 +116,11 @@ func _physics_process(delta):
 			train_counter = 0
 
 		decay_counter += 1
-		if decay_counter >= 30:
+		if decay_counter >= 120:
 			epsilon = max(0.1, epsilon * 0.999)
 			decay_counter = 0
-
+			print(epsilon)
+			
 		step_count += 1
 		if step_count % target_update_frequency == 0:
 			target_network.assign(q_network)
@@ -133,7 +133,6 @@ func _physics_process(delta):
 	var action = choose_action(previous_state)
 	execute_action(action, delta)
 	previous_action = action
-	just_collected_coin = false
 
 func is_done() -> bool:
 	# Check if too much time has passed without collecting a coin.
@@ -171,14 +170,14 @@ func get_state() -> Array:
 	return [
 		distance_to_coin.x / 100,
 		distance_to_coin.y / 100,
-		vision["RayCast_Up"] / 100,
-		vision["RayCast_UpRight"] / 100,
-		vision["RayCast_Right"] / 100,
-		vision["RayCast_DownRight"] / 100,
-		vision["RayCast_Down"] / 100,
-		vision["RayCast_DownLeft"] / 100,
-		vision["RayCast_Left"] / 100,
-		vision["RayCast_UpLeft"] / 100,
+		vision["RayCast_Up"],
+		vision["RayCast_UpRight"],
+		vision["RayCast_Right"],
+		vision["RayCast_DownRight"],
+		vision["RayCast_Down"],
+		vision["RayCast_DownLeft"],
+		vision["RayCast_Left"],
+		vision["RayCast_UpLeft"],
 		int(is_on_floor())
 	]
 
@@ -221,26 +220,29 @@ func update_vision():
 				# Distance from the agent to where the ray hits something.
 				var collision_point = (child.get_collision_point() - global_position).length()
 				# Normalize the distance value so it doesn't become too large.
-				vision[child.name] = collision_point
+				vision[child.name] = collision_point / 100
 			else:
 				# If there's no collision, store a default value (1).
 				vision[child.name] = 1000
 
-func get_reward(previous_distance, current_distance, action) -> float:
+func get_reward(current_distance,action) -> float:
 	var reward = 0.0
-
-	# 1) Encourage active movement with a bigger per-step penalty if stuck:
-	reward -= 0.02
-
-	# 2) Large bonus if we actually collect a coin
+	
+	# 1) Large bonus if we actually collect a coin
 	if just_collected_coin:
-		reward += 120.0
 		time_since_last_coin_collection = 0.0
-		return reward
-
+		coin_position = get_closest_coin()
+		previous_distance = (agent_position - coin_position).length()
+		just_collected_coin = false
+		print(120)
+		return 120
+	
+	# 2) Encourage active movement with a bigger per-step penalty if stuck:
+	reward -= 0.02
+	
 	# 3) Distance-based reward (positive if we get closer, negative if we go farther)
 	var dist_improvement = previous_distance - current_distance
-	reward += dist_improvement * 0.02  # scale to a moderate value
+	reward += dist_improvement * 0.01  # scale to a moderate value
 
 	# 4) Additional penalty if moving away from the coin
 	if dist_improvement < 0:
@@ -248,17 +250,21 @@ func get_reward(previous_distance, current_distance, action) -> float:
 
 	# 5) Time penalty for taking too long
 	reward -= (time_since_last_coin_collection * 0.001)
-
+	
+	#print(vision)
 	# 6) Heavier wall penalty so it doesn't hug walls
 	for dir in ["Right", "Left"]:
-		if vision.has("RayCast_"+dir) and vision["RayCast_"+dir] < 0.2:
+		
+		if vision.has("RayCast_"+dir) and vision["RayCast_"+dir] < 0.4:
 			# Penalty for hugging a wall
-			reward -= 0.2
+			reward -= 0.3
+			
 			# Even bigger penalty if actually pressing into it
 			if (dir == "Right" and action == 0) or (dir == "Left" and action == 1):
-				reward -= 1.0
+				reward -= 5.0
 	
-	#print(reward)
+	previous_distance = current_distance
+	print(reward)
 	return reward
 
 func get_closest_coin() -> Vector2:
@@ -321,14 +327,16 @@ func store_experience(state, action, reward, next_state, done):
 		replay_buffer.pop_front()
 	replay_buffer.append([state, action, reward, next_state, done])
 
+func sample_batch():
+	var batch = []
+	for i in range(batch_size):
+		var idx = randi() % replay_buffer.size()
+		batch.append(replay_buffer[idx])
+	return batch
+
 # Trains the Q-network using experiences from the replay buffer
 func train_dqn() -> void:
-	# Create a shuffled copy of the replay buffer
-	var shuffled_buffer = replay_buffer.duplicate()
-	shuffled_buffer.shuffle()
-
-	# Select a random batch of experiences
-	var batch = shuffled_buffer.slice(0, batch_size)
+	var batch = sample_batch()
 	
 	var batch_states = []
 	var batch_targets = []
