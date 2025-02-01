@@ -43,6 +43,16 @@ var just_collected_coin = false
 var TIME_LIMIT = 60
 var decay_counter = 0
 
+var rewards_file_path = "user://episode_rewards.csv"
+var current_episode_reward = 0
+var episode_num = 0
+
+var collected_count = 0  # Track how many collectables are collected
+var total_collectables = 0  # Total collectables in the scene
+
+# Reference to the collectables in the scene
+var collectables = []
+
 # ---- NEW VARIABLES FOR EPISODE CONTROL ----
 var time_since_last_coin_collection = 0.0
 var initial_position = Vector2()  # Will set in _ready()
@@ -55,6 +65,10 @@ func _ready() -> void:
 	level = get_parent()
 	# Record the initial position to reset back to when an episode ends.
 	initial_position = position
+	
+	# Find all collectable nodes in the scene
+	collectables = get_tree().get_nodes_in_group("collectable")
+	total_collectables = collectables.size()
 	
 	# Set up the Q-network with chosen optimizer and functions.
 	q_network.use_Adam(0.0001)
@@ -79,6 +93,7 @@ func _physics_process(delta):
 	# Apply gravity and update counters
 	apply_gravity(delta)
 	time_since_last_coin_collection += delta
+	# print(time_since_last_coin_collection)
 
 	# Update agent position and nearest coin
 	agent_position = self.position
@@ -93,6 +108,11 @@ func _physics_process(delta):
 		var current_state = get_state()
 		#print(current_state)
 		
+		current_episode_reward += reward
+		previous_distance = current_distance
+		
+		# print(current_state)
+		
 		# Check if the episode is done (only if Globals.control_type != "agent", as your code does)
 		var done = false
 		if Globals.control_type != "agent":
@@ -105,9 +125,14 @@ func _physics_process(delta):
 		store_experience(previous_state, previous_action, reward, current_state, done)
 		previous_state = current_state
 		
-		# If done, reset the agent and end this physics frame
-		if done:
+		# If done or all collectables were collected, reset the agent and end this physics frame
+		if done or collected_count == total_collectables:
+			episode_num += 1
+			print(current_episode_reward)
+			append_episode_reward(episode_num, current_episode_reward)
+			current_episode_reward = 0
 			reset_agent()
+			reset_collectables()
 			episodes += 1
 			return
 			
@@ -120,7 +145,7 @@ func _physics_process(delta):
 		if decay_counter >= 120:
 			epsilon = max(0.1, epsilon * 0.999)
 			decay_counter = 0
-			print(epsilon)
+			# print(epsilon)
 			
 		step_count += 1
 		if step_count % target_update_frequency == 0:
@@ -158,6 +183,16 @@ func reset_agent():
 	previous_state = null
 	previous_action = null
 	print("Episode done. Resetting agent to initial position.")
+
+func reset_collectables():
+	# resets the collectables in the level and the score
+	var temp_score = level.get_ui_score() * -1
+	level.update_ui_score(temp_score)
+	
+	# Reset the collectables to their original positions
+	for collectable in collectables:
+		collectable.reset_position()
+	collected_count = 0
 
 func get_state() -> Array:
 	# This function gathers the agent's observations about its environment.
@@ -398,7 +433,8 @@ func apply_gravity(delta):
 func _on_area_2d_body_entered(body):
 	# This function is called when the character (Area2D) touches something.
 	# If it's a collectible, we collect it, update the score, and set a flag for a reward.
-	if body.is_in_group("collectable"):
+	if body.is_in_group("collectable") and body.is_active:
+		collected_count += 1
 		var coin_value = body.value
 		level.update_ui_score(coin_value)
 		body.collect()
@@ -470,3 +506,18 @@ func load_agent():
 			# After loading, we often set epsilon lower so it mostly exploits what it has learned.
 			epsilon = 0.1
 			print("Epsilon set to ", epsilon, " for exploitation.")
+
+func append_episode_reward(episode_number, value):
+	if not FileAccess.file_exists(rewards_file_path):
+		# Create the file and add a header if it doesn't exist
+		var file = FileAccess.open(rewards_file_path, FileAccess.WRITE)
+		if file:
+			file.store_line("Episode,Reward")  # Add a header
+			file.close()
+	
+	var file = FileAccess.open(rewards_file_path, FileAccess.READ_WRITE)
+	
+	if file:
+		file.seek_end()  # Move to the end of the file to append
+		file.store_line(str(episode_number) + "," + str(value))
+		file.close()

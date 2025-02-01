@@ -1,5 +1,2 @@
 res://intro.tscn
-res://level.tscn
-res://main_game.tscn
-res://platform.tscn
 res://dqn-agent/dqnAgent.gd

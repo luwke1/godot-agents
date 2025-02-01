@@ -5,13 +5,13 @@ class_name UI
 @onready var completed_ui = %GameCompleteUI
 @onready var current_control_type = Globals.control_type
 var score = 0
-var maxScore = 30
+var maxScore = 40
 
 func update_score(value):
 	score += value
 	update_score_label()
 	
-	if score >= maxScore:
+	if Globals.control_type != "train" and score >= maxScore:
 		%GameCompleteUI.visible = true
 	#	completed_ui.visable = true
 		%Label.visible = false
@@ -21,6 +21,9 @@ func update_score(value):
 	
 func update_score_label():
 	score_label.text = "Score:  " + str(score)
+	
+func get_score():
+	return score
 	
 func _on_button_pressed():
 	Globals.control_type = current_control_type 
