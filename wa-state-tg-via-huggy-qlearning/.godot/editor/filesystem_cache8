@@ -1,5 +1,5 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1738355312
+::res://::1738431533
 canvas_layer.tscn::PackedScene::6429603426969656042::1736907280::0::1::::<><>::
 collectible.gd::GDScript::-1::1736907280::0::1::::<>StaticBody2D<>::
 collectible.tscn::PackedScene::776384779895904801::1736907280::0::1::::<><>::uid://bj45g8cyllpmd::::res://Retina/character_handGreen.png<>res://collectible.gd
@@ -7,13 +7,13 @@ export_presets.cfg::TextFile::-1::1736907280::0::1::::<><>::
 globals.gd::GDScript::-1::1736907280::0::1::::<>Node<>::
 icon.svg::CompressedTexture2D::3096116634337120932::1736907280::1736907335::1::::<><>::
 intro.gd::GDScript::-1::1737522101::0::1::::<>Node2D<>::
-intro.tscn::PackedScene::6927911981321835494::1738281218::0::1::::<><>::res://intro.gd
+intro.tscn::PackedScene::6927911981321835494::1738370112::0::1::::<><>::res://intro.gd
 level.gd::GDScript::-1::1736741017::0::1::::<>Node2D<>::
-level.tscn::PackedScene::3158875101216663628::1738279420::0::1::::<><>::res://level.gd<>uid://c8wmrh485xv7i::::res://platform.tscn<>uid://bsam6tvsivhq2::::res://player.tscn<>uid://lcc7de2cgfr2::::res://collectible.tscn<>res://dqn-agent/dqnAgent.gd
-main_game.tscn::PackedScene::7643259609928760738::1738279420::0::1::::<><>::uid://blaghgm356qqu::::res://level.tscn<>uid://d2m7kkrk6mlqj::::res://UI.tscn
+level.tscn::PackedScene::3158875101216663628::1738370112::0::1::::<><>::res://level.gd<>uid://c8wmrh485xv7i::::res://platform.tscn<>uid://bsam6tvsivhq2::::res://player.tscn<>uid://lcc7de2cgfr2::::res://collectible.tscn<>res://dqn-agent/dqnAgent.gd
+main_game.tscn::PackedScene::7643259609928760738::1738370112::0::1::::<><>::uid://blaghgm356qqu::::res://level.tscn<>uid://d2m7kkrk6mlqj::::res://UI.tscn
 notes.gd::GDScript::-1::1736907280::0::1::::<>Node2D<>::
 notes.tscn::PackedScene::894802977039664403::1736907280::0::1::::<><>::res://notes.gd
-platform.tscn::PackedScene::7135248894443334164::1738279420::0::1::::<><>::
+platform.tscn::PackedScene::7135248894443334164::1738370112::0::1::::<><>::
 player.gd::GDScript::-1::1736909126::0::1::::<>CharacterBody2D<>::
 player.tscn::PackedScene::3650604863915841151::1736907280::0::1::::<><>::res://player.gd<>uid://f35hwrv242bb::::res://Retina/character_squarePurple.png
 process_notes.gd::GDScript::-1::1736907280::0::1::::<>Node2D<>::
@@ -63,8 +63,8 @@ RGBCameraSensor3D.gd::GDScript::-1::1736907296::0::1::::RGBCameraSensor3D<>Node3
 RGBCameraSensor3D.tscn::PackedScene::2387917642450167534::1736907296::0::1::::<><>::res://addons/godot_rl_agents/sensors/sensors_3d/RGBCameraSensor3D.gd
 ::res://addons/Neural Network/::1737663636
 ::res://addons/Neural Network/data/::1737663636
-::res://dqn-agent/::1738279419
-dqnAgent.gd::GDScript::-1::1738279419::0::1::::<>CharacterBody2D<>::
+::res://dqn-agent/::1738371648
+dqnAgent.gd::GDScript::-1::1738371648::0::1::::<>CharacterBody2D<>::
 ::res://logs/::1736907296
 ::res://logs/sb3/::1736907296
 ::res://logs/sb3/experiment_1/::1736907296

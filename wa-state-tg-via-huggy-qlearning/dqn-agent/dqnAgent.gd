@@ -99,10 +99,11 @@ func _physics_process(delta):
 			if is_done():
 				done = true
 				# Override the reward for forced termination
-				reward = -2
+				reward = -10
 		
 		# Store exactly one transition (either done=false or done=true)
 		store_experience(previous_state, previous_action, reward, current_state, done)
+		previous_state = current_state
 		
 		# If done, reset the agent and end this physics frame
 		if done:
@@ -234,7 +235,7 @@ func get_reward(current_distance,action) -> float:
 		coin_position = get_closest_coin()
 		previous_distance = (agent_position - coin_position).length()
 		just_collected_coin = false
-		print(120)
+		#print(120)
 		return 120
 	
 	# 2) Encourage active movement with a bigger per-step penalty if stuck:
@@ -264,7 +265,7 @@ func get_reward(current_distance,action) -> float:
 				reward -= 5.0
 	
 	previous_distance = current_distance
-	print(reward)
+	#print(reward)
 	return reward
 
 func get_closest_coin() -> Vector2:
