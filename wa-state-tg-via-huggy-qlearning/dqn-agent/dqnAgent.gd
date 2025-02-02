@@ -40,12 +40,13 @@ var train_counter := 0
 
 var level
 var just_collected_coin = false
-var TIME_LIMIT = 60
+var TIME_LIMIT = 15
 var decay_counter = 0
 
 var rewards_file_path = "user://episode_rewards.csv"
 var current_episode_reward = 0
 var episode_num = 0
+var episode_time = 0
 
 var collected_count = 0  # Track how many collectables are collected
 var total_collectables = 0  # Total collectables in the scene
@@ -93,6 +94,7 @@ func _physics_process(delta):
 	# Apply gravity and update counters
 	apply_gravity(delta)
 	time_since_last_coin_collection += delta
+	episode_time += delta
 	# print(time_since_last_coin_collection)
 
 	# Update agent position and nearest coin
@@ -129,8 +131,9 @@ func _physics_process(delta):
 		if done or collected_count == total_collectables:
 			episode_num += 1
 			print(current_episode_reward)
-			append_episode_reward(episode_num, current_episode_reward)
+			append_episode_reward(episode_num, current_episode_reward, collected_count, epsilon, episode_time)
 			current_episode_reward = 0
+			episode_time = 0
 			reset_agent()
 			reset_collectables()
 			episodes += 1
@@ -143,7 +146,7 @@ func _physics_process(delta):
 
 		decay_counter += 1
 		if decay_counter >= 120:
-			epsilon = max(0.1, epsilon * 0.999)
+			epsilon = max(0.1, epsilon * 0.9975)
 			decay_counter = 0
 			# print(epsilon)
 			
@@ -232,12 +235,12 @@ func execute_action(action: int, delta: float) -> void:
 		0: velocity.x = speed         # Move right
 		1: velocity.x = -speed        # Move left
 		2: jump_if_possible()         # Jump only
-		3:
-			jump_if_possible()        # Jump + Right
-			velocity.x = speed
-		4:
-			jump_if_possible()        # Jump + Left
-			velocity.x = -speed
+		#3:
+			#jump_if_possible()        # Jump + Right
+			#velocity.x = speed
+		#4:
+			#jump_if_possible()        # Jump + Left
+			#velocity.x = -speed
 	
 	# Apply the velocity to the character in the 2D scene.
 	move_and_slide()
@@ -271,7 +274,7 @@ func get_reward(current_distance,action) -> float:
 		previous_distance = (agent_position - coin_position).length()
 		just_collected_coin = false
 		#print(120)
-		return 120
+		return 10
 	
 	# 2) Encourage active movement with a bigger per-step penalty if stuck:
 	reward -= 0.02
@@ -311,7 +314,7 @@ func get_closest_coin() -> Vector2:
 	var best_pos = Vector2.ZERO
 	
 	for child in level.get_children():
-		if child.name.begins_with("collectible"):
+		if child.name.begins_with("collectible") and child.is_active:
 			var test_pos = child.global_position
 			var distance = (test_pos - agent_position).length()
 			if distance < min_distance:
@@ -507,17 +510,17 @@ func load_agent():
 			epsilon = 0.1
 			print("Epsilon set to ", epsilon, " for exploitation.")
 
-func append_episode_reward(episode_number, value):
+func append_episode_reward(episode_number, ep_reward, num_collected, epsilon, ep_time):
 	if not FileAccess.file_exists(rewards_file_path):
 		# Create the file and add a header if it doesn't exist
 		var file = FileAccess.open(rewards_file_path, FileAccess.WRITE)
 		if file:
-			file.store_line("Episode,Reward")  # Add a header
+			file.store_line("Episode,Reward, num_collected, epsilon, episode_time")  # Add a header
 			file.close()
 	
 	var file = FileAccess.open(rewards_file_path, FileAccess.READ_WRITE)
 	
 	if file:
 		file.seek_end()  # Move to the end of the file to append
-		file.store_line(str(episode_number) + "," + str(value))
+		file.store_line(str(episode_number) + "," + str(ep_reward) + "," + str(num_collected) + "," + str(epsilon) + "," + str(ep_time))
 		file.close()
