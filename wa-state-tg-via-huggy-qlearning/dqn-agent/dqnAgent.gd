@@ -11,8 +11,8 @@ var current_jumps = 0
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 # Import and initialize neural networks for DQN (one online, one target for stability)
-var q_network : NNET = NNET.new([11, 64, 64, 5], false)
-var target_network : NNET = NNET.new([11, 64, 64, 5], false)
+var q_network : NNET = NNET.new([11, 64, 64, 3], false)
+var target_network : NNET = NNET.new([11, 64, 64, 3], false)
 
 # Variables for Deep Q-Network (DQN) implementation
 var epsilon := 1.0    # Exploration rate for epsilon-greedy policy
@@ -40,7 +40,7 @@ var train_counter := 0
 
 var level
 var just_collected_coin = false
-var TIME_LIMIT = 15
+var TIME_LIMIT = 30
 var decay_counter = 0
 
 var rewards_file_path = "user://episode_rewards.csv"
@@ -333,7 +333,7 @@ func choose_action(current_state):
 	
 	if randf() < epsilon:
 		# Random action if exploring.
-		action = randi() % 5
+		action = randi() % 3
 	else:
 		# Feed the current_state to our Q-network to get the predicted Q-values.
 		q_network.set_input(current_state)
@@ -352,10 +352,10 @@ func choose_action(current_state):
 			if best_actions.size() > 0:
 				action = best_actions[randi() % best_actions.size()]
 			else:
-				action = randi() % 5
+				action = randi() % 3
 		else:
 			# If no Q-values, just pick randomly.
-			action = randi() % 5
+			action = randi() % 3
 	
 	return action
 
