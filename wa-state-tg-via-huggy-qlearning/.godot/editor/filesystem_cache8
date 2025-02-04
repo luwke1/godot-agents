@@ -1,5 +1,5 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1738534400
+::res://::1738618050
 canvas_layer.tscn::PackedScene::6429603426969656042::1738534305::0::1::::<><>::
 collectible.gd::GDScript::-1::1738534305::0::1::::<>StaticBody2D<>::
 collectible.tscn::PackedScene::776384779895904801::1738534305::0::1::::<><>::uid://bj45g8cyllpmd::::res://Retina/character_handGreen.png<>res://collectible.gd
@@ -7,10 +7,10 @@ export_presets.cfg::TextFile::-1::1738534305::0::1::::<><>::
 globals.gd::GDScript::-1::1738534305::0::1::::<>Node<>::
 icon.svg::CompressedTexture2D::3096116634337120932::1738534305::1738534403::1::::<><>::
 intro.gd::GDScript::-1::1738534305::0::1::::<>Node2D<>::
-intro.tscn::PackedScene::6927911981321835494::1738534305::0::1::::<><>::res://intro.gd
+intro.tscn::PackedScene::6927911981321835494::1738552022::0::1::::<><>::res://intro.gd
 level.gd::GDScript::-1::1738534305::0::1::::<>Node2D<>::
-level.tscn::PackedScene::3158875101216663628::1738534305::0::1::::<><>::res://level.gd<>uid://c8wmrh485xv7i::::res://platform.tscn<>uid://bsam6tvsivhq2::::res://player.tscn<>uid://lcc7de2cgfr2::::res://collectible.tscn<>res://dqn-agent/dqnAgent.gd
-main_game.tscn::PackedScene::7643259609928760738::1738534305::0::1::::<><>::uid://blaghgm356qqu::::res://level.tscn<>uid://d2m7kkrk6mlqj::::res://UI.tscn
+level.tscn::PackedScene::3158875101216663628::1738552022::0::1::::<><>::res://level.gd<>uid://c8wmrh485xv7i::::res://platform.tscn<>uid://bsam6tvsivhq2::::res://player.tscn<>uid://lcc7de2cgfr2::::res://collectible.tscn<>res://dqn-agent/dqnAgent.gd
+main_game.tscn::PackedScene::7643259609928760738::1738552022::0::1::::<><>::uid://blaghgm356qqu::::res://level.tscn<>uid://d2m7kkrk6mlqj::::res://UI.tscn
 notes.gd::GDScript::-1::1738534305::0::1::::<>Node2D<>::
 notes.tscn::PackedScene::894802977039664403::1738534305::0::1::::<><>::res://notes.gd
 platform.tscn::PackedScene::7135248894443334164::1738534305::0::1::::<><>::
@@ -30,8 +30,8 @@ tutorial_tester.gd::GDScript::-1::1738534305::0::1::::<>Node<>::
 tutorial_tester.tscn::PackedScene::4412595684869957679::1738534305::0::1::::<><>::res://tutorial_tester.gd
 UI.gd::GDScript::-1::1738534305::0::1::::UI<>CanvasLayer<>::
 UI.tscn::PackedScene::9081094716053912741::1738534305::0::1::::<><>::res://UI.gd
-::res://addons/::1738534305
-::res://addons/godot_rl_agents/::1738534305
+::res://addons/::1738538427
+::res://addons/godot_rl_agents/::1738534404
 godot_rl_agents.gd::GDScript::-1::1738534305::0::1::::<>EditorPlugin<>::
 icon.png::CompressedTexture2D::3256411858888672180::1738534305::1738534404::1::::<><>::
 plugin.cfg::TextFile::-1::1738534305::0::1::::<><>::
@@ -61,19 +61,21 @@ RaycastSensor3D.gd::GDScript::-1::1738534305::0::1::::RayCastSensor3D<>ISensor3D
 RaycastSensor3D.tscn::PackedScene::4755965679510419149::1738534305::0::1::::<><>::res://addons/godot_rl_agents/sensors/sensors_3d/RaycastSensor3D.gd
 RGBCameraSensor3D.gd::GDScript::-1::1738534305::0::1::::RGBCameraSensor3D<>Node3D<>::
 RGBCameraSensor3D.tscn::PackedScene::2387917642450167534::1738534305::0::1::::<><>::res://addons/godot_rl_agents/sensors/sensors_3d/RGBCameraSensor3D.gd
-::res://dqn-agent/::1738534377
-dqnAgent.gd::GDScript::-1::1738534377::0::1::::<>CharacterBody2D<>::
+::res://addons/Neural Network/::1738538427
+::res://addons/Neural Network/data/::1738538427
+::res://dqn-agent/::1738552001
+dqnAgent.gd::GDScript::-1::1738552001::0::1::::<>CharacterBody2D<>::
 ::res://logs/::1738534305
 ::res://logs/sb3/::1738534305
 ::res://logs/sb3/experiment_1/::1738534305
 ::res://logs/sb3/experiment_2/::1738534305
-::res://Neural Network/::1738534305
+::res://Neural Network/::1738534404
 base NNET class.gd::GDScript::-1::1738534305::0::1::::BNNET<>RefCounted<>res://addons/Neural Network/base NNET class.gd::
 example.gd::GDScript::-1::1738534305::0::1::::<>EditorPlugin<>::
 NNET icon.png::CompressedTexture2D::2263494673080241640::1738534305::1738534404::1::::<><>::
 NNET.gd::GDScript::-1::1738534305::0::1::::NNET<>BNNET<>res://addons/Neural Network/base NNET class.gd::
 plugin.cfg::TextFile::-1::1738534305::0::1::::<><>::
-::res://Retina/::1738534305
+::res://Retina/::1738534404
 background_cloudA.png::CompressedTexture2D::6773945216502572000::1738534305::1738534404::1::::<><>::
 background_cloudB.png::CompressedTexture2D::8662309737598978467::1738534305::1738534404::1::::<><>::
 background_tree.png::CompressedTexture2D::3072280259398969254::1738534305::1738534404::1::::<><>::
