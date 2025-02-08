@@ -15,7 +15,7 @@ var target_network : NNET = NNET.new([13, 64,64, 3], false)
 # DQN Hyperparameters and training settings
 # --------------------------------------------------------------------------------
 var epsilon := 1.0         # Exploration rate (starts high)
-var gamma := 0.85          # Discount factor for future rewards
+var gamma := 0.85             # Discount factor for future rewards
 var replay_buffer := []
 var max_buffer_size := 5000
 var batch_size := 64
@@ -24,6 +24,7 @@ var step_count := 0
 var train_frequency := 100
 var train_counter := 0
 var decay_counter = 0
+var frames_per_action := 10  # The number of frames to continue one action (except jump)
 
 # --------------------------------------------------------------------------------
 # Tracking environment state
@@ -46,6 +47,7 @@ var rewards_file_path = "user://episode_rewards.csv"
 var current_episode_reward = 0
 var episode_num = 0
 var episode_time = 0
+var reward_for_action = 0
 
 var collected_count = 0
 var total_collectables = 0
@@ -53,6 +55,11 @@ var collectables = []
 
 var time_since_last_coin_collection = 0.0
 var initial_position = Vector2()
+
+var action_count := 0        # The number of actions taken 
+var action := 0
+var previous_action_count := 0 # ensures training only happens once for a data set
+var previous_action_count_target := 0 # ensures target update only happens once for a data set
 
 # --------------------------------------------------------------------------------
 # _ready() – Initialization, including network optimizer & loading collectables.
@@ -104,8 +111,12 @@ func _physics_process(delta):
 				done = true
 				reward = -10  # Penalize episode timeout
 		
-		store_experience(previous_state, previous_action, reward, current_state, done)
-		previous_state = current_state
+		reward_for_action += reward
+		step_count += 1
+		if step_count % frames_per_action == 0:
+			store_experience(previous_state, previous_action, reward_for_action, current_state, done)
+			previous_state = current_state
+			reward_for_action
 		
 		if done or collected_count == total_collectables:
 			episode_num += 1
@@ -118,28 +129,32 @@ func _physics_process(delta):
 			episodes += 1
 			return
 			
-		train_counter += 1
-		if train_counter % train_frequency == 0 and replay_buffer.size() >= batch_size:
+		if action_count % train_frequency == 0 and replay_buffer.size() >= batch_size and action_count != previous_action_count:
+			print("training dqn")
 			train_dqn()
 			train_counter = 0
+			previous_action_count = action_count
 
 		decay_counter += 1
 		if decay_counter >= 240:
 			# Decay epsilon gradually; consider a more aggressive schedule if needed.
 			print(epsilon)
-			epsilon = max(0.01, epsilon * 0.995)
+			epsilon = max(0.01, epsilon * 0.999)
 			decay_counter = 0
 			
-		step_count += 1
-		if step_count % target_update_frequency == 0:
+		if action_count % target_update_frequency == 0 and action_count != previous_action_count_target:
+			print("training target")
 			target_network.assign(q_network)
+			previous_action_count_target = action_count
 	else:
 		previous_state = get_state()
 		previous_distance = (agent_position - coin_position).length()
-
-	var action = choose_action(previous_state)
-	execute_action(action, delta)
-	previous_action = action
+		
+	if step_count % frames_per_action == 0 or previous_action == 2 or previous_action == null:
+		action = choose_action(previous_state)
+		action_count += 1
+		previous_action = action
+	execute_action(previous_action, delta)
 
 func is_done() -> bool:
 	return time_since_last_coin_collection >= TIME_LIMIT
@@ -236,6 +251,10 @@ func get_reward(current_distance, action) -> float:
 	var dist_improvement = previous_distance - current_distance
 	reward += dist_improvement * 0.05
 	
+	 ## Reward for double jumping
+	if action == 2 and current_jumps == 1:
+		reward += 1.0  # Reward for double jumping
+	
 	if vision["RayCast_Up"] < 68 and action==2:
 		reward -= 0.1
 	
@@ -243,6 +262,18 @@ func get_reward(current_distance, action) -> float:
 	reward -= (time_since_last_coin_collection * 0.005)
 	#print(time_since_last_coin_collection * 0.01)
 	#print(reward)
+	
+	# 6) Heavier wall penalty so it doesn't hug walls
+	for dir in ["Right", "Left"]:
+
+		if vision.has("RayCast_"+dir) and vision["RayCast_"+dir] < 0.4:
+			# Penalty for hugging a wall
+			reward -= 0.3
+
+			# Even bigger penalty if actually pressing into it
+			if (dir == "Right" and action == 0) or (dir == "Left" and action == 1):
+				reward -= 5.0
+	
 	return reward
 
 # --------------------------------------------------------------------------------
@@ -286,7 +317,7 @@ func choose_action(current_state):
 		q_network.set_input(current_state)
 		q_network.propagate_forward()
 		var q_values = q_network.get_output()
-		if q_values.size() > 0:
+		if q_values.size() > 0 and q_values != null:
 			var max_q_value = q_values.max()
 			var best_actions = []
 			for i in range(q_values.size()):
