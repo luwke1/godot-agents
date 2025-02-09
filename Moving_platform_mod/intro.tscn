@@ -1,0 +1,94 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5x6x0cflmcx7"]
+
+[ext_resource type="Script" path="res://intro.gd" id="1_6alt3"]
+
+[node name="Intro" type="Node2D"]
+script = ExtResource("1_6alt3")
+metadata/_edit_horizontal_guides_ = [130.0]
+
+[node name="Quit" type="Button" parent="."]
+offset_left = 173.0
+offset_top = 305.0
+offset_right = 215.0
+offset_bottom = 336.0
+tooltip_text = "to exit,
+back to the IDE"
+text = "Quit"
+
+[node name="PlayHuman" type="Button" parent="."]
+offset_left = 659.0
+offset_top = 213.0
+offset_right = 777.0
+offset_bottom = 244.0
+tooltip_text = "use the keys to move the sprite"
+text = "Human Player"
+
+[node name="PlayFunction" type="Button" parent="."]
+offset_left = 656.0
+offset_top = 294.0
+offset_right = 784.0
+offset_bottom = 325.0
+tooltip_text = "just sit back and watch the sprite move "
+text = "Function Player"
+
+[node name="Notes" type="Button" parent="."]
+offset_left = 167.0
+offset_top = 230.0
+offset_right = 221.0
+offset_bottom = 261.0
+tooltip_text = "moving tips,  and 
+notes on development"
+text = "Notes"
+
+[node name="Agent_Run" type="Button" parent="."]
+offset_left = 648.0
+offset_top = 73.0
+offset_right = 829.0
+offset_bottom = 104.0
+tooltip_text = "Notice the output below,
+giving the current Action plan as the sprite runs your policy"
+text = "Run your trained Agent"
+
+[node name="Agent_Train" type="Button" parent="."]
+offset_left = 657.0
+offset_top = 138.0
+offset_right = 794.0
+offset_bottom = 169.0
+tooltip_text = "trains the agent in a model, then,
+saves the policy file for the Agent to run"
+text = "Train your Agent"
+
+[node name="Label" type="Label" parent="."]
+offset_left = 306.0
+offset_top = 134.0
+offset_right = 598.0
+offset_bottom = 246.0
+text = "Click on a button to go somewhere. 
+Help info is on the Notes  screen.
+Good Luck !! 
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Title" type="Label" parent="."]
+offset_left = 249.0
+offset_top = 67.0
+offset_right = 466.0
+offset_bottom = 119.0
+scale = Vector2(2, 2)
+text = "Platformer Tutorial"
+
+[node name="NowTraining" type="Label" parent="."]
+visible = false
+offset_left = 400.0
+offset_top = 347.0
+offset_right = 710.0
+offset_bottom = 370.0
+text = "Now Training, please wait awhile ... ... ... "
+
+[connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="PlayHuman" to="." method="_on_play_human_pressed"]
+[connection signal="pressed" from="PlayFunction" to="." method="_on_play_function_pressed"]
+[connection signal="pressed" from="Notes" to="." method="_on_notes_pressed"]
+[connection signal="pressed" from="Agent_Run" to="." method="_on_agent_run_pressed"]
+[connection signal="pressed" from="Agent_Train" to="." method="_on_agent_train_pressed"]
