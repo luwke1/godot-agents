@@ -1,0 +1,93 @@
+[gd_scene load_steps=2 format=3 uid="uid://m0pjldcjy4y6"]
+
+[ext_resource type="Script" path="res://notes.gd" id="1_nqio7"]
+
+[node name="Notes" type="Node2D"]
+script = ExtResource("1_nqio7")
+
+[node name="human_Function" type="Label" parent="."]
+offset_left = 48.0
+offset_top = 127.0
+offset_right = 255.0
+offset_bottom = 456.0
+text = "Controls: 
+
+Human
+< = go left
+> = go right
+<space bar> = jump
+can also double-jump
+
+Function:
+there are no controls, 
+just sit back and watch.
+
+"
+
+[node name="Return" type="Button" parent="."]
+offset_left = 422.0
+offset_top = 143.0
+offset_right = 483.0
+offset_bottom = 174.0
+text = "Return"
+
+[node name="Train_Agent" type="Label" parent="."]
+offset_left = 640.0
+offset_top = 277.0
+offset_right = 1161.0
+offset_bottom = 586.0
+mouse_filter = 1
+text = "How to train your Agent ...
+
+Just click on the \"train your Agent\" button and it wil undergo 10,000 
+training episodes, then save the file as your trained policy so the
+Agent can access it to move in the environment.  
+The trainig algorithm is a very basic Q-Learning algorithm that is
+entirely within Godot's GD Script.  ... Very cool.  !!
+This was made possible by \"pseudo-dividing\" the environment 
+into 22 cells. Watch the video to see how it works.  
+This method can be expanded to encompass more complicated
+environments, but be careful !! ...  It is a lot of work to designate
+the movements into and out of each cell, and to get it working.  "
+
+[node name="Run_Agent" type="Label" parent="."]
+offset_left = 632.0
+offset_top = 13.0
+offset_right = 1183.0
+offset_bottom = 244.0
+mouse_filter = 1
+text = "How to run your already trained Agent ...
+
+Click on \"run\" and watch it go.  You can also see its intended path by
+looking at the output screen below the game animation screen. 
+The ideal path for this tutorial version of the game is: 3,2,2,3,2,2,2,2
+You will need to modify the training variables in the tester_tutorial 
+g script and the rewards given there to get the ideal path. 
+Then, to get the ideal path to be follwoed when the Agent runs, you
+will likely need to modify the movement parameters in the player code."
+
+[node name="Train_Agent_notes" type="Button" parent="."]
+offset_left = 53.0
+offset_top = 533.0
+offset_right = 320.0
+offset_bottom = 564.0
+text = "More notes on training the  agent"
+
+[node name="Label" type="Label" parent="."]
+offset_left = 60.0
+offset_top = 43.0
+offset_right = 349.0
+offset_bottom = 66.0
+scale = Vector2(1.7, 1.7)
+text = "This is  our  first page of  notes. "
+
+[node name="process_notes" type="Button" parent="."]
+offset_left = 63.0
+offset_top = 473.0
+offset_right = 181.0
+offset_bottom = 504.0
+text = "Design Process Notes"
+
+[connection signal="pressed" from="Return" to="." method="_on_return_pressed"]
+[connection signal="pressed" from="Train_Agent_notes" to="." method="_on_train_agent_notes_pressed"]
+[connection signal="pressed" from="process_notes" to="." method="_on_process_notes_pressed"]

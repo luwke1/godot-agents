@@ -1,0 +1,72 @@
+[gd_scene load_steps=6 format=3 uid="uid://blaghgm356qqu"]
+
+[ext_resource type="Script" path="res://level.gd" id="1_1oil2"]
+[ext_resource type="PackedScene" uid="uid://c8wmrh485xv7i" path="res://platform.tscn" id="1_rbgqf"]
+[ext_resource type="PackedScene" uid="uid://bsam6tvsivhq2" path="res://player.tscn" id="2_a4gyf"]
+[ext_resource type="PackedScene" uid="uid://lcc7de2cgfr2" path="res://collectible.tscn" id="3_7l7rg"]
+[ext_resource type="PackedScene" uid="uid://xgfhf0ut77uj" path="res://Fireball.tscn" id="5_e1rxj"]
+
+[node name="level" type="Node2D"]
+script = ExtResource("1_1oil2")
+
+[node name="ground" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="ground"]
+position = Vector2(0, 576)
+scale = Vector2(1.04415, 1.07433)
+polygon = PackedVector2Array(0, 0, 1152, 0, 1152, 64, 0, 64)
+
+[node name="Polygon2D" type="Polygon2D" parent="ground"]
+position = Vector2(0, 576)
+scale = Vector2(1.01475, 0.965131)
+polygon = PackedVector2Array(0, 0, 1184, 0, 1184, 32, 1184, 96, 0, 96)
+
+[node name="platform" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(96, 384)
+scale = Vector2(0.994328, 1.04747)
+
+[node name="platform2" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(768, 384)
+
+[node name="platform3" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(416, 192)
+
+[node name="player" parent="." node_paths=PackedStringArray("currentLevel") instance=ExtResource("2_a4gyf")]
+position = Vector2(32, 544)
+currentLevel = NodePath("..")
+
+[node name="collectible" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(928, 352)
+
+[node name="collectible2" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(576, 160)
+
+[node name="collectible3" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(224, 352)
+
+[node name="Left Wall" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Left Wall"]
+polygon = PackedVector2Array(0, 0, 0, 672, -64, 672, -64, 0)
+
+[node name="Polygon2D" type="Polygon2D" parent="Left Wall"]
+polygon = PackedVector2Array(0, 0, 0, 672, -64, 672, -64, 0)
+
+[node name="Right Wall" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Right Wall"]
+position = Vector2(1248, 0)
+scale = Vector2(0.752365, 0.995296)
+polygon = PackedVector2Array(0, 0, 0, 672, -64, 672, -64, 0)
+
+[node name="Polygon2D" type="Polygon2D" parent="Right Wall"]
+position = Vector2(1248, 0)
+scale = Vector2(0.752365, 0.986636)
+polygon = PackedVector2Array(0, 0, 0, 672, -64, 672, -64, 0)
+
+[node name="Fireball" parent="." instance=ExtResource("5_e1rxj")]
+position = Vector2(576, 512)
+scale = Vector2(0.969254, 0.980065)
+
+[node name="Fireball3" parent="." instance=ExtResource("5_e1rxj")]
+position = Vector2(1120, 32)

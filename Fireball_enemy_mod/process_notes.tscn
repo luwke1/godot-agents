@@ -1,0 +1,77 @@
+[gd_scene load_steps=2 format=3 uid="uid://cto2plac1mot8"]
+
+[ext_resource type="Script" path="res://process_notes.gd" id="1_3qjer"]
+
+[node name="Process_notes" type="Node2D"]
+script = ExtResource("1_3qjer")
+
+[node name="return" type="Button" parent="."]
+offset_left = 494.0
+offset_top = 554.0
+offset_right = 555.0
+offset_bottom = 585.0
+text = "Return"
+
+[node name="process_narrative_left" type="Label" parent="."]
+offset_left = 4.0
+offset_top = 55.0
+offset_right = 553.0
+offset_bottom = 584.0
+text = "Feedback from the Camas Invite was to use the platformer tutorial
+from Muddy Wolf  that is linked  on the website. 
+So, I followed that tutorial and built a game as close to the tutorial
+as I could.  It is very close. My  version is linked  on the website. 
+Then I built a \"Function Agent\" to solve the game since it is very easy 
+to do.  I left it in the Game Agent example of the game for your
+amusement.  I learned a lot about how the game works by building
+that Function Agent,  and you might consider doing the same. 
+
+Then I looked and tried several ways to build a Game Agent, including 
+trying to coax a full solution out of ChatGTP (hopeless), RL-Agents, a 
+DQN version linking AiGym and Godot, and others. While on the one 
+hand I could not get any of them to work better than my simple 
+Function Agent, on the other hand, they were each VERY complicated
+to design and get working, and, I couldn't see how to do it so I could 
+explain it easily. Then, I came across the one example tutorial that I 
+did end up using, which was perfectlly what I was looking for:  a simple 
+basic Q-Learning way to design an Agent, and, better yet, without using
+AiGym or any other \"black box\".  The link to the tutorial (text-only) is 
+also on the website. 
+"
+
+[node name="process_narrative_right" type="Label" parent="."]
+offset_left = 564.0
+offset_top = 9.0
+offset_right = 1196.0
+offset_bottom = 592.0
+text = "Amazingly, it worked the first time I entered and ran it... in Python of course, 
+and using the command line.  After taking a few hours trying to convert the 
+Python into GD script, I dropped the whole thing into ChatGTP and asked to 
+convert it.  There were a few errors related to the fact the ChatGTP inisists on 
+showing GD-script 3.x rather than 4.3. After correcting,  it ran perfectly! In Python 
+it takes about 3 seconds to run 1,000 training episodes, whereeas in Godot it 
+takes about 2 seconds. 100,000 episodes takes about 30 seconds. Cool!    And, 
+best of all, the entire Q-Learning table and function are all right there to inspect,  
+modify, and learn from.  I then found tutorials on how to save and load the policy, 
+I also left this in the linked Godot Agent for your amusement. 
+
+So, I next made a copy of the training code and converted it to our tutorial game 
+with 22 states and four Actions ... tedious, but not  hard.  ChatGTP was somewhat 
+useful. After adding the \"splash screens\" that the rubric gives points for (including 
+this one), it all runs !!  Then,  I had  three  tasks remaining: 
+1) The \"Rewards\" I had initially given had resulted in the Agent \"cheating\"
+and finding a simple way to \"win\" ... Task #1 is to modify my rewards.  
+2) When the trained policy is run, the Agent-player in the game does not
+ move exactly right ... Task #2 is to give it accurate in-game movement. 
+3) And, then make videos  showing you how I did this simple version of a 
+Q-Learning RML Agent so that you can get a jump start on doing it in your game. "
+
+[node name="Title" type="Label" parent="."]
+offset_left = 128.0
+offset_top = 10.0
+offset_right = 270.0
+offset_bottom = 33.0
+scale = Vector2(1.7, 1.7)
+text = "Process Narrative "
+
+[connection signal="pressed" from="return" to="." method="_on_return_pressed"]
