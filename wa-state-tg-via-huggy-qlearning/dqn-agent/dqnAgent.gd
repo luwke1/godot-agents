@@ -8,23 +8,21 @@ extends CharacterBody2D
 var current_jumps = 0
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
-var q_network : NNET = NNET.new([13,64,64, 3], false)
-var target_network : NNET = NNET.new([13, 64,64, 3], false)
-
 # --------------------------------------------------------------------------------
 # DQN Hyperparameters and training settings
 # --------------------------------------------------------------------------------
-var epsilon := 1.0         # Exploration rate (starts high)
-var gamma := 0.85             # Discount factor for future rewards
+var q_network : NNET = NNET.new([13, 64, 64, 3], false)
+var target_network : NNET = NNET.new([13, 64, 64, 3], false)
+
+var epsilon := 0.8
+var gamma := 0.99
 var replay_buffer := []
 var max_buffer_size := 5000
 var batch_size := 64
-var target_update_frequency := 500
+var target_update_frequency := 100
 var step_count := 0
-var train_frequency := 100
+var train_frequency := 5
 var train_counter := 0
-var decay_counter = 0
-var frames_per_action := 10  # The number of frames to continue one action (except jump)
 
 # --------------------------------------------------------------------------------
 # Tracking environment state
@@ -32,7 +30,8 @@ var frames_per_action := 10  # The number of frames to continue one action (exce
 var previous_distance = 0.0
 var previous_state = null
 var previous_action = null
-var agent_position = self.position
+
+var agent_position = Vector2()
 var coin_position = Vector2.ZERO
 
 var vision = {}
@@ -40,14 +39,13 @@ var episodes = 0
 
 var level
 var just_collected_coin = false
-var TIME_LIMIT = 30
+var TIME_LIMIT = 25
 
 # Reward logging
 var rewards_file_path = "user://episode_rewards.csv"
-var current_episode_reward = 0
+var current_episode_reward = 0.0
 var episode_num = 0
-var episode_time = 0
-var reward_for_action = 0
+var episode_time = 0.0
 
 var collected_count = 0
 var total_collectables = 0
@@ -56,13 +54,8 @@ var collectables = []
 var time_since_last_coin_collection = 0.0
 var initial_position = Vector2()
 
-var action_count := 0        # The number of actions taken 
-var action := 0
-var previous_action_count := 0 # ensures training only happens once for a data set
-var previous_action_count_target := 0 # ensures target update only happens once for a data set
-
 # --------------------------------------------------------------------------------
-# _ready() – Initialization, including network optimizer & loading collectables.
+# Initialization
 # --------------------------------------------------------------------------------
 func _ready() -> void:
 	stop_training()
@@ -71,13 +64,13 @@ func _ready() -> void:
 	collectables = get_tree().get_nodes_in_group("collectable")
 	total_collectables = collectables.size()
 	
-	# Set up Q-network and target network with Adam optimizer and MSE loss.
-	q_network.use_Adam(0.0001)
+	# Configure Q-network and target network
+	q_network.use_Adam(0.001)
 	q_network.set_loss_function(BNNET.LossFunctions.MSE)
 	q_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 2)
 	q_network.set_function(BNNET.ActivationFunctions.identity, 3, 3)
 	
-	target_network.use_Adam(0.0001)
+	target_network.use_Adam(0.001)
 	target_network.set_loss_function(BNNET.LossFunctions.MSE)
 	target_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 2)
 	target_network.set_function(BNNET.ActivationFunctions.identity, 3, 3)
@@ -87,78 +80,81 @@ func _ready() -> void:
 		load_agent()
 
 # --------------------------------------------------------------------------------
-# _physics_process() – Main training loop
+# Main Training Loop (synchronized every 0.2 seconds)
 # --------------------------------------------------------------------------------
+var decision_interval := 0.2
+var decision_timer := 0.0
+var current_action := 0
+
 func _physics_process(delta):
+	# Update physics and timers
 	apply_gravity(delta)
 	time_since_last_coin_collection += delta
 	episode_time += delta
-
-	agent_position = self.position
-	coin_position = get_closest_coin()
-
-	# If we have a previous state/action, compute a reward and store experience.
-	if previous_state != null and previous_action != null:
-		var current_distance = (agent_position - coin_position).length()
-		var reward = get_reward(current_distance, previous_action)
-		var current_state = get_state()
-		current_episode_reward += reward
-		previous_distance = current_distance
+	
+	agent_position = position
+	coin_position = get_nearest_coin_position()
+	
+	# Execute the current action
+	execute_action(current_action, delta)
+	
+	decision_timer += delta
+	if decision_timer >= decision_interval:
+		decision_timer = 0.0
 		
-		var done = false
-		if Globals.control_type != "agent":
+		# --- Evaluate previous decision ---
+		if previous_state != null and previous_action != null:
+			var current_state = get_state()
+			var current_distance = (agent_position - coin_position).length()
+			var reward = get_reward(previous_distance, current_distance, previous_action)
+			current_episode_reward += reward
+			
+			var done = false
 			if is_done():
 				done = true
-				reward = -10  # Penalize episode timeout
-		
-		reward_for_action += reward
-		step_count += 1
-		if step_count % frames_per_action == 0:
-			store_experience(previous_state, previous_action, reward_for_action, current_state, done)
+				reward -= 10
+			
+			store_experience(previous_state, previous_action, reward, current_state, done)
+			
 			previous_state = current_state
-			reward_for_action = 0
-		
-		if done or collected_count == total_collectables:
-			episode_num += 1
-			print("Episode Reward:", current_episode_reward)
-			append_episode_reward(episode_num, current_episode_reward, collected_count, epsilon, episode_time)
-			current_episode_reward = 0
-			episode_time = 0
-			reset_agent()
-			reset_collectables()
-			episodes += 1
-			return
+			previous_distance = current_distance
 			
-		if action_count % train_frequency == 0 and replay_buffer.size() >= batch_size and action_count != previous_action_count:
-			print("training dqn")
-			train_dqn()
-			train_counter = 0
-			previous_action_count = action_count
-
-		decay_counter += 1
-		if decay_counter >= 240:
-			# Decay epsilon gradually; consider a more aggressive schedule if needed.
-			print(epsilon)
-			epsilon = max(0.01, epsilon * 0.999)
-			decay_counter = 0
+			if done or collected_count == total_collectables:
+				epsilon = max(0.01, epsilon * 0.995)
+				print("Episode #", episode_num, " ended. Epsilon:", epsilon)
+				print("Episode Reward:", current_episode_reward)
+				
+				episode_num += 1
+				append_episode_reward(episode_num, current_episode_reward, collected_count, epsilon, episode_time)
+				
+				current_episode_reward = 0
+				episode_time = 0
+				reset_agent()
+				reset_collectables()
+				return
 			
-		if action_count % target_update_frequency == 0 and action_count != previous_action_count_target:
-			print("training target")
-			target_network.assign(q_network)
-			previous_action_count_target = action_count
-	else:
-		previous_state = get_state()
-		previous_distance = (agent_position - coin_position).length()
+			train_counter += 1
+			step_count += 1
+			
+			if train_counter % train_frequency == 0 and replay_buffer.size() >= batch_size:
+				train_dqn()
+			
+			if step_count % target_update_frequency == 0:
+				target_network.assign(q_network)
+		else:
+			previous_state = get_state()
+			previous_distance = (agent_position - coin_position).length()
 		
-	if step_count % frames_per_action == 0 or previous_action == 2 or previous_action == null:
-		action = choose_action(previous_state)
-		action_count += 1
-		previous_action = action
-	execute_action(previous_action, delta)
+		# --- Choose a new action ---
+		current_action = choose_action(previous_state)
+		previous_action = current_action
 
 func is_done() -> bool:
 	return time_since_last_coin_collection >= TIME_LIMIT
 
+# --------------------------------------------------------------------------------
+# Environment Reset & Control
+# --------------------------------------------------------------------------------
 func stop_training():
 	replay_buffer.clear()
 	velocity = Vector2.ZERO
@@ -185,17 +181,19 @@ func reset_collectables():
 	collected_count = 0
 
 # --------------------------------------------------------------------------------
-# (2) UPDATED STATE: Include coin distance, velocity, jump status, vision, and floor flag.
+# State Representation
 # --------------------------------------------------------------------------------
 func get_state() -> Array:
 	var distance_to_coin = coin_position - agent_position
 	update_vision()
-	# Normalize values to keep scales similar.
+	
+	var can_jump = 1 if current_jumps < jump_count else 0
+	
 	return [
 		distance_to_coin.x / 100,
 		distance_to_coin.y / 100,
-		velocity.x / speed,
-		velocity.y / abs(jump_velocity),
+		velocity.x / 500,
+		velocity.y / 500,
 		vision.get("RayCast_Up", 1000) / 100,
 		vision.get("RayCast_UpRight", 1000) / 100,
 		vision.get("RayCast_Right", 1000) / 100,
@@ -207,21 +205,6 @@ func get_state() -> Array:
 		int(is_on_floor())
 	]
 
-func execute_action(action: int, delta: float) -> void:
-	if is_on_floor():
-		current_jumps = 0
-	velocity.x = move_toward(velocity.x, 0, speed * delta)
-	match action:
-		0: velocity.x = speed      # Move right
-		1: velocity.x = -speed     # Move left
-		2: jump_if_possible()      # Jump
-	move_and_slide()
-
-func jump_if_possible():
-	if current_jumps < jump_count:
-		velocity.y = jump_velocity
-		current_jumps += 1
-
 func update_vision():
 	for child in get_children():
 		if child is RayCast2D:
@@ -232,83 +215,84 @@ func update_vision():
 				vision[child.name] = 1000
 
 # --------------------------------------------------------------------------------
-# (3) UPDATED REWARD: Cleaned up (removed print calls) and tuned coefficients.
+# Action Execution
 # --------------------------------------------------------------------------------
-func get_reward(current_distance, action) -> float:
+func execute_action(action: int, delta: float) -> void:
+	if is_on_floor():
+		current_jumps = 0
+
+	velocity.x = move_toward(velocity.x, 0, speed * delta)
+
+	match action:
+		0: # Move right
+			velocity.x = speed
+		1: # Move left
+			velocity.x = -speed
+		2: # Jump (or double jump)
+			jump_if_possible()
+
+	move_and_slide()
+
+func jump_if_possible():
+	if current_jumps < jump_count:
+		velocity.y = jump_velocity
+		current_jumps += 1
+
+func apply_gravity(delta):
+	if not is_on_floor():
+		velocity.y += gravity * gravity_multiplier * delta
+
+# --------------------------------------------------------------------------------
+# Reward Function (called every decision interval)
+# --------------------------------------------------------------------------------
+func get_reward(prev_distance: float, current_distance: float, action: int) -> float:
 	var reward = 0.0
-	
+
+	# Coin bonus remains unchanged, clamped to be non-negative.
 	if just_collected_coin:
+		var coin_bonus = max(0, 20.0 - (time_since_last_coin_collection * 0.5))
+		print("Coin bonus: ", coin_bonus)
 		time_since_last_coin_collection = 0.0
-		coin_position = get_closest_coin()
-		previous_distance = (agent_position - coin_position).length()
 		just_collected_coin = false
-		return 200
-	
-	## Step penalty to encourage efficiency
-	reward -= 0.05
-	
-	## Reward for moving closer, penalty for moving away
-	var dist_improvement = previous_distance - current_distance
-	reward += dist_improvement * 0.05
-	
-	 ## Reward for double jumping
-	if action == 2 and current_jumps == 1:
-		reward += 1.0  # Reward for double jumping
-	
-	if vision["RayCast_Up"] < 68 and action==2:
-		reward -= 0.1
-	
-	## Small time penalty to discourage dithering
-	reward -= (time_since_last_coin_collection * 0.005)
-	#print(time_since_last_coin_collection * 0.01)
-	#print(reward)
-	
-	# 6) Heavier wall penalty so it doesn't hug walls
-	for dir in ["Right", "Left"]:
+		return coin_bonus
 
-		if vision.has("RayCast_"+dir) and vision["RayCast_"+dir] < 0.4:
-			# Penalty for hugging a wall
-			reward -= 0.3
+	# Calculate distance improvement.
+	var dist_improvement = prev_distance - current_distance
+	var scaled_improvement = dist_improvement * 0.005
+	if abs(scaled_improvement) > 1.5:
+		scaled_improvement = clamp(scaled_improvement, -1, 1)
+	reward += scaled_improvement
 
-			# Even bigger penalty if actually pressing into it
-			if (dir == "Right" and action == 0) or (dir == "Left" and action == 1):
-				reward -= 5.0
+	var coin_dist = (agent_position - coin_position).length()
+	var bonus = lerp(0.05, 0.000001, clamp(coin_dist / 500.0, 0, 1))
+	reward += bonus
+
+	# Apply a small time penalty to encourage faster collection.
+	reward -= 0.1
 	
 	return reward
 
 # --------------------------------------------------------------------------------
-# (4) get_closest_coin() – Only consider coins within jump range first.
+# Find the physically nearest coin (no jump filtering)
 # --------------------------------------------------------------------------------
-func get_closest_coin() -> Vector2:
-	var reachable_coin = null
-	var fallback_coin = null
-	var min_reachable_distance = INF
-	var min_distance = INF
+func get_nearest_coin_position() -> Vector2:
+	var nearest_coin = null
+	var min_dist = INF
 	
-	# Here we use a fixed max jump height (adjust if you compute dynamically)
-	var max_jump_height = 150
-	
-	for child in level.get_children():
-		if child.name.begins_with("collectible") and child.is_active:
-			var test_pos = child.global_position
-			var distance = (test_pos - agent_position).length()
-			if distance < min_distance:
-				min_distance = distance
-				fallback_coin = child
-			if test_pos.y < agent_position.y:
-				if (agent_position.y - test_pos.y) > max_jump_height:
-					continue
-			if distance < min_reachable_distance:
-				min_reachable_distance = distance
-				reachable_coin = child
-	
-	if reachable_coin:
-		return reachable_coin.global_position
-	elif fallback_coin:
-		return fallback_coin.global_position
-	else:
-		return agent_position 
+	for child in collectables:
+		if child.is_active:
+			var dist = (child.global_position - agent_position).length()
+			if dist < min_dist:
+				min_dist = dist
+				nearest_coin = child
 
+	if nearest_coin:
+		return nearest_coin.global_position
+	return agent_position
+
+# --------------------------------------------------------------------------------
+# DQN: Choose Action (Epsilon-Greedy)
+# --------------------------------------------------------------------------------
 func choose_action(current_state):
 	var action = 0
 	if randf() < epsilon:
@@ -317,11 +301,11 @@ func choose_action(current_state):
 		q_network.set_input(current_state)
 		q_network.propagate_forward()
 		var q_values = q_network.get_output()
-		if q_values.size() > 0 and q_values != null:
-			var max_q_value = q_values.max()
+		if q_values.size() > 0:
+			var max_q = q_values.max()
 			var best_actions = []
 			for i in range(q_values.size()):
-				if q_values[i] == max_q_value:
+				if q_values[i] == max_q:
 					best_actions.append(i)
 			if best_actions.size() > 0:
 				action = best_actions[randi() % best_actions.size()]
@@ -331,6 +315,9 @@ func choose_action(current_state):
 			action = randi() % 3
 	return action
 
+# --------------------------------------------------------------------------------
+# Replay Buffer Management
+# --------------------------------------------------------------------------------
 func store_experience(state, action, reward, next_state, done):
 	if replay_buffer.size() >= max_buffer_size:
 		replay_buffer.pop_front()
@@ -344,7 +331,7 @@ func sample_batch():
 	return batch
 
 # --------------------------------------------------------------------------------
-# (5) Training: Double DQN update with target network.
+# Double DQN Update
 # --------------------------------------------------------------------------------
 func train_dqn() -> void:
 	var batch = sample_batch()
@@ -352,11 +339,11 @@ func train_dqn() -> void:
 	var batch_targets = []
 	
 	for experience in batch:
-		var state     = experience[0]
-		var action    = experience[1]
-		var reward    = experience[2]
-		var next_state= experience[3]
-		var done      = experience[4]
+		var state      = experience[0]
+		var action     = experience[1]
+		var reward     = experience[2]
+		var next_state = experience[3]
+		var done       = experience[4]
 		
 		q_network.set_input(state)
 		q_network.propagate_forward()
@@ -388,12 +375,13 @@ func train_dqn() -> void:
 		batch_states.append(state)
 		batch_targets.append(target_q_values)
 	
+	var loss = q_network.get_loss(batch_states, batch_targets)
+	print("Loss, ", loss)
 	q_network.train(batch_states, batch_targets)
 
-func apply_gravity(delta):
-	if not is_on_floor():
-		velocity.y += gravity * gravity_multiplier * delta 
-
+# --------------------------------------------------------------------------------
+# Handle Collecting a Coin
+# --------------------------------------------------------------------------------
 func _on_area_2d_body_entered(body):
 	if body.is_in_group("collectable") and body.is_active:
 		collected_count += 1
@@ -403,7 +391,7 @@ func _on_area_2d_body_entered(body):
 		just_collected_coin = true
 
 # --------------------------------------------------------------------------------
-# Save / Load agent functions (unchanged except for minor logging improvements)
+# Save / Load Agent Functions
 # --------------------------------------------------------------------------------
 func save_agent():
 	var weights_path = "user://q_network_weights.dat"
@@ -459,19 +447,24 @@ func load_agent():
 			step_count = agent_data.get("step_count", 0)
 			train_counter = agent_data.get("train_counter", 0)
 			print("Agent parameters loaded from ", agent_data_path)
-			# Set epsilon low to favor exploitation post-loading.
-			epsilon = 0.1
+			epsilon = 0.1  # reduce exploration after load
 			print("Epsilon set to ", epsilon, " for exploitation.")
 
 func append_episode_reward(episode_number, ep_reward, num_collected, epsilon, ep_time):
 	if not FileAccess.file_exists(rewards_file_path):
 		var file = FileAccess.open(rewards_file_path, FileAccess.WRITE)
 		if file:
-			file.store_line("Episode,Reward,num_collected,epsilon,episode_time")
+			file.store_line("Episode,Reward,Collected,Epsilon,Time")
 			file.close()
 	
 	var file = FileAccess.open(rewards_file_path, FileAccess.READ_WRITE)
 	if file:
 		file.seek_end()
-		file.store_line(str(episode_number) + "," + str(ep_reward) + "," + str(num_collected) + "," + str(epsilon) + "," + str(ep_time))
+		file.store_line(
+			str(episode_number) + "," +
+			str(ep_reward) + "," +
+			str(num_collected) + "," +
+			str(epsilon) + "," +
+			str(ep_time)
+		)
 		file.close()
