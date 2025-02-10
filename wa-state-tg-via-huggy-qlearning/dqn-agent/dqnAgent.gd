@@ -116,7 +116,7 @@ func _physics_process(delta):
 		if step_count % frames_per_action == 0:
 			store_experience(previous_state, previous_action, reward_for_action, current_state, done)
 			previous_state = current_state
-			reward_for_action
+			reward_for_action = 0
 		
 		if done or collected_count == total_collectables:
 			episode_num += 1
