@@ -39,7 +39,7 @@ var episodes = 0
 
 var level
 var just_collected_coin = false
-var TIME_LIMIT = 25
+var TIME_LIMIT = 60
 
 # Reward logging
 var rewards_file_path = "user://episode_rewards.csv"
@@ -54,6 +54,9 @@ var collectables = []
 var time_since_last_coin_collection = 0.0
 var initial_position = Vector2()
 
+
+var jump_cooldown = 0.3  # seconds delay between jumps
+var time_since_last_jump = 0.0
 # --------------------------------------------------------------------------------
 # Initialization
 # --------------------------------------------------------------------------------
@@ -65,12 +68,12 @@ func _ready() -> void:
 	total_collectables = collectables.size()
 	
 	# Configure Q-network and target network
-	q_network.use_Adam(0.001)
+	q_network.use_Adam(0.0005)
 	q_network.set_loss_function(BNNET.LossFunctions.MSE)
 	q_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 2)
 	q_network.set_function(BNNET.ActivationFunctions.identity, 3, 3)
 	
-	target_network.use_Adam(0.001)
+	target_network.use_Adam(0.0005)
 	target_network.set_loss_function(BNNET.LossFunctions.MSE)
 	target_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 2)
 	target_network.set_function(BNNET.ActivationFunctions.identity, 3, 3)
@@ -94,6 +97,8 @@ func _physics_process(delta):
 	
 	agent_position = position
 	coin_position = get_nearest_coin_position()
+	
+	time_since_last_jump += delta
 	
 	# Execute the current action
 	execute_action(current_action, delta)
@@ -234,9 +239,14 @@ func execute_action(action: int, delta: float) -> void:
 	move_and_slide()
 
 func jump_if_possible():
+	# Only allow jump if the cooldown period has passed
+	if time_since_last_jump < jump_cooldown:
+		return
 	if current_jumps < jump_count:
 		velocity.y = jump_velocity
 		current_jumps += 1
+		# Reset the cooldown timer
+		time_since_last_jump = 0.0
 
 func apply_gravity(delta):
 	if not is_on_floor():
@@ -250,7 +260,7 @@ func get_reward(prev_distance: float, current_distance: float, action: int) -> f
 
 	# Coin bonus remains unchanged, clamped to be non-negative.
 	if just_collected_coin:
-		var coin_bonus = max(0, 20.0 - (time_since_last_coin_collection * 0.5))
+		var coin_bonus = max(0, 50.0 - (time_since_last_coin_collection * 0.5))
 		print("Coin bonus: ", coin_bonus)
 		time_since_last_coin_collection = 0.0
 		just_collected_coin = false
@@ -258,7 +268,7 @@ func get_reward(prev_distance: float, current_distance: float, action: int) -> f
 
 	# Calculate distance improvement.
 	var dist_improvement = prev_distance - current_distance
-	var scaled_improvement = dist_improvement * 0.005
+	var scaled_improvement = dist_improvement * 0.002
 	if abs(scaled_improvement) > 1.5:
 		scaled_improvement = clamp(scaled_improvement, -1, 1)
 	reward += scaled_improvement
@@ -266,9 +276,8 @@ func get_reward(prev_distance: float, current_distance: float, action: int) -> f
 	var coin_dist = (agent_position - coin_position).length()
 	var bonus = lerp(0.05, 0.000001, clamp(coin_dist / 500.0, 0, 1))
 	reward += bonus
-
-	# Apply a small time penalty to encourage faster collection.
-	reward -= 0.1
+	
+	reward -= 0.05
 	
 	return reward
 
@@ -375,8 +384,6 @@ func train_dqn() -> void:
 		batch_states.append(state)
 		batch_targets.append(target_q_values)
 	
-	var loss = q_network.get_loss(batch_states, batch_targets)
-	print("Loss, ", loss)
 	q_network.train(batch_states, batch_targets)
 
 # --------------------------------------------------------------------------------
