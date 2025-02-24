@@ -22,7 +22,7 @@ scale = Vector2(1.01475, 0.965131)
 polygon = PackedVector2Array(0, 0, 1184, 0, 1184, 32, 1184, 96, 0, 96)
 
 [node name="platform" parent="." instance=ExtResource("1_rbgqf")]
-position = Vector2(96, 384)
+position = Vector2(155, 442)
 scale = Vector2(0.994328, 1.04747)
 
 [node name="platform2" parent="." instance=ExtResource("1_rbgqf")]
@@ -42,7 +42,7 @@ position = Vector2(928, 352)
 position = Vector2(576, 160)
 
 [node name="collectible3" parent="." instance=ExtResource("3_7l7rg")]
-position = Vector2(224, 352)
+position = Vector2(327, 394)
 
 [node name="Left Wall" type="StaticBody2D" parent="."]
 
