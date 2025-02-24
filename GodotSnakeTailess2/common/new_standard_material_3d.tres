@@ -1,6 +1,0 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://cyqci3m8oykqv"]
-
-[ext_resource type="Texture2D" uid="uid://cgncjkx3u8l87" path="res://starting_folder/icon.svg" id="1_3iny4"]
-
-[resource]
-albedo_texture = ExtResource("1_3iny4")

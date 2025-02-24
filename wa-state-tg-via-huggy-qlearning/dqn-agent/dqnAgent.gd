@@ -19,7 +19,7 @@ var gamma := 0.99
 var replay_buffer := []
 var max_buffer_size := 5000
 var batch_size := 64
-var target_update_frequency := 100
+var target_update_frequency := 1000
 var step_count := 0
 var train_frequency := 5
 var train_counter := 0
@@ -68,13 +68,13 @@ func _ready() -> void:
 	total_collectables = collectables.size()
 	
 	# Configure Q-network and target network
-	q_network.use_Adam(0.0005)
-	q_network.set_loss_function(BNNET.LossFunctions.MSE)
+	q_network.use_Adam(0.001)
+	q_network.set_loss_function(BNNET.LossFunctions.LogCosh_loss)
 	q_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 2)
 	q_network.set_function(BNNET.ActivationFunctions.identity, 3, 3)
 	
-	target_network.use_Adam(0.0005)
-	target_network.set_loss_function(BNNET.LossFunctions.MSE)
+	target_network.use_Adam(0.001)
+	target_network.set_loss_function(BNNET.LossFunctions.LogCosh_loss)
 	target_network.set_function(BNNET.ActivationFunctions.ReLU, 1, 2)
 	target_network.set_function(BNNET.ActivationFunctions.identity, 3, 3)
 	target_network.assign(q_network)
@@ -125,7 +125,7 @@ func _physics_process(delta):
 			previous_distance = current_distance
 			
 			if done or collected_count == total_collectables:
-				epsilon = max(0.01, epsilon * 0.995)
+				epsilon = max(0.01, epsilon * 0.99)
 				print("Episode #", episode_num, " ended. Epsilon:", epsilon)
 				print("Episode Reward:", current_episode_reward)
 				
@@ -195,18 +195,18 @@ func get_state() -> Array:
 	var can_jump = 1 if current_jumps < jump_count else 0
 	
 	return [
-		distance_to_coin.x / 100,
-		distance_to_coin.y / 100,
+		distance_to_coin.x / 500,
+		distance_to_coin.y / 500,
 		velocity.x / 500,
 		velocity.y / 500,
-		vision.get("RayCast_Up", 1000) / 100,
-		vision.get("RayCast_UpRight", 1000) / 100,
-		vision.get("RayCast_Right", 1000) / 100,
-		vision.get("RayCast_DownRight", 1000) / 100,
-		vision.get("RayCast_Down", 1000) / 100,
-		vision.get("RayCast_DownLeft", 1000) / 100,
-		vision.get("RayCast_Left", 1000) / 100,
-		vision.get("RayCast_UpLeft", 1000) / 100,
+		vision.get("RayCast_Up", 1000) / 1000,
+		vision.get("RayCast_UpRight", 1000) / 1000,
+		vision.get("RayCast_Right", 1000) / 1000,
+		vision.get("RayCast_DownRight", 1000) / 1000,
+		vision.get("RayCast_Down", 1000) / 1000,
+		vision.get("RayCast_DownLeft", 1000) / 1000,
+		vision.get("RayCast_Left", 1000) / 1000,
+		vision.get("RayCast_UpLeft", 1000) / 1000,
 		int(is_on_floor())
 	]
 
@@ -258,27 +258,24 @@ func apply_gravity(delta):
 func get_reward(prev_distance: float, current_distance: float, action: int) -> float:
 	var reward = 0.0
 
-	# Coin bonus remains unchanged, clamped to be non-negative.
 	if just_collected_coin:
-		var coin_bonus = max(0, 50.0 - (time_since_last_coin_collection * 0.5))
+		var coin_bonus = max(0, 100.0 - (time_since_last_coin_collection * 0.5))
 		print("Coin bonus: ", coin_bonus)
 		time_since_last_coin_collection = 0.0
 		just_collected_coin = false
 		return coin_bonus
 
-	# Calculate distance improvement.
 	var dist_improvement = prev_distance - current_distance
-	var scaled_improvement = dist_improvement * 0.002
-	if abs(scaled_improvement) > 1.5:
-		scaled_improvement = clamp(scaled_improvement, -1, 1)
-	reward += scaled_improvement
+	var scaled_improvement = dist_improvement * 0.01
+	reward += clamp(scaled_improvement, -0.2, 1.0)
 
-	var coin_dist = (agent_position - coin_position).length()
-	var bonus = lerp(0.05, 0.000001, clamp(coin_dist / 500.0, 0, 1))
-	reward += bonus
+	#var coin_dist = (agent_position - coin_position).length()
+	#var bonus = lerp(0.2, 0.0001, clamp(coin_dist / 500.0, 0, 1))
+	#reward += bonus
 	
-	reward -= 0.05
+	reward -= 0.04
 	
+	print(reward)
 	return reward
 
 # --------------------------------------------------------------------------------
@@ -310,6 +307,8 @@ func choose_action(current_state):
 		q_network.set_input(current_state)
 		q_network.propagate_forward()
 		var q_values = q_network.get_output()
+		if step_count % 100 == 0:  # Print every 100 steps
+			print("Q-values: ", q_values)
 		if q_values.size() > 0:
 			var max_q = q_values.max()
 			var best_actions = []
@@ -396,6 +395,9 @@ func _on_area_2d_body_entered(body):
 		level.update_ui_score(coin_value)
 		body.collect()
 		just_collected_coin = true
+		# Immediately update coin position and previous_distance after collection
+		coin_position = get_nearest_coin_position()
+		previous_distance = (agent_position - coin_position).length()
 
 # --------------------------------------------------------------------------------
 # Save / Load Agent Functions
@@ -454,7 +456,7 @@ func load_agent():
 			step_count = agent_data.get("step_count", 0)
 			train_counter = agent_data.get("train_counter", 0)
 			print("Agent parameters loaded from ", agent_data_path)
-			epsilon = 0.1  # reduce exploration after load
+			epsilon = 0.1
 			print("Epsilon set to ", epsilon, " for exploitation.")
 
 func append_episode_reward(episode_number, ep_reward, num_collected, epsilon, ep_time):
