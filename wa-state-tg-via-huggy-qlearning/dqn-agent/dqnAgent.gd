@@ -124,7 +124,7 @@ func _physics_process(delta):
 			previous_state = current_state
 			previous_distance = current_distance
 			
-			if done or collected_count == total_collectables:
+			if done or collected_count == total_collectables and Globals.control_type != "agent":
 				epsilon = max(0.01, epsilon * 0.99)
 				print("Episode #", episode_num, " ended. Epsilon:", epsilon)
 				print("Episode Reward:", current_episode_reward)
@@ -141,10 +141,10 @@ func _physics_process(delta):
 			train_counter += 1
 			step_count += 1
 			
-			if train_counter % train_frequency == 0 and replay_buffer.size() >= batch_size:
+			if train_counter % train_frequency == 0 and replay_buffer.size() >= batch_size and Globals.control_type != "agent":
 				train_dqn()
 			
-			if step_count % target_update_frequency == 0:
+			if step_count % target_update_frequency == 0 and Globals.control_type != "agent":
 				target_network.assign(q_network)
 		else:
 			previous_state = get_state()
