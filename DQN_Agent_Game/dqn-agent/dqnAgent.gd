@@ -192,8 +192,6 @@ func get_state() -> Array:
 	var distance_to_coin = coin_position - agent_position
 	update_vision()
 	
-	var can_jump = 1 if current_jumps < jump_count else 0
-	
 	return [
 		distance_to_coin.x / 500,
 		distance_to_coin.y / 500,
