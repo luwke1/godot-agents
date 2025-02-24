@@ -28,4 +28,5 @@ func _on_agent_run_pressed():
 
 func _on_agent_train_pressed():
 	$NowTraining.visible = true
-	get_tree().change_scene_to_file("res://tutorial_tester.tscn")
+	Globals.control_type = "train"
+	get_tree().change_scene_to_file("res://main_game.tscn")

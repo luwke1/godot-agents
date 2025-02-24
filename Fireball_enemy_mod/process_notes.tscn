@@ -1,9 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://cto2plac1mot8"]
+[gd_scene load_steps=2 format=3 uid="uid://d1eig4l5prtk8"]
 
-[ext_resource type="Script" path="res://process_notes.gd" id="1_3qjer"]
+[sub_resource type="GDScript" id="GDScript_656of"]
+script/source = "extends Node2D
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+
+func _on_return_pressed():
+	get_tree().change_scene_to_file(\"res://notes.tscn\")
+"
 
 [node name="Process_notes" type="Node2D"]
-script = ExtResource("1_3qjer")
+script = SubResource("GDScript_656of")
 
 [node name="return" type="Button" parent="."]
 offset_left = 494.0
