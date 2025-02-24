@@ -1,0 +1,90 @@
+[gd_scene load_steps=2 format=3 uid="uid://csuee74y3opb4"]
+
+[ext_resource type="Script" path="res://to_train_agent.gd" id="1_g78h8"]
+
+[node name="ToTrainAgent" type="Node2D"]
+script = ExtResource("1_g78h8")
+
+[node name="Title" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+scale = Vector2(2, 2)
+text = "How to train your agent notes ..."
+
+[node name="Text_left" type="Label" parent="."]
+offset_left = 31.0
+offset_top = 67.0
+offset_right = 477.0
+offset_bottom = 402.0
+text = "We are trying to do a basic Q-Learning agent.
+
+There are only four  possible Actions:
+move left
+move right
+jump and left = double-jump and small move left
+jump and right = double-jump and small move right
+
+The observable space in this \"game\" is broken into 22 possible squares.
+This is so that the Q-table is not too large.  Currenlty 4x22 = 88 cells.
+A Q-learning table is a function that has the actions listed across the top, 
+and the squares of the observable space down the side.  Each cell in the
+table is a possible state and action.  The epsilon-greedy function chooses
+the best action from each observable state and action-choices. 
+The Q-learning table  should stay under about 800 possible states  so 
+that a normal computer can handle the load. 
+
+Note that adding an enemy, or lengthening the level space, or another 
+action such as \"shooting\", or adding levels, or increasing the number of 
+\"coins\", etc,  each increases the Q-table size ... "
+
+[node name="Text_right" type="Label" parent="."]
+offset_left = 622.0
+offset_top = 54.0
+offset_right = 1160.0
+offset_bottom = 299.0
+text = "The rewards are:
+each \"coin\" is +30, +60, +90  points
+falling off the either end of the scene is -20 and GAME OVER and lost
+taking more than 12 actions  is also GAME OVER and lost
+no reward for jumping or moving 
+getting all  coins is GAME OVER and won !!
+The rewards had to be tweaked a lot to get this to work right ... 
+... see the code ... and mess with it to learn about all the variables. 
+
+"
+
+[node name="Return" type="Button" parent="."]
+offset_left = 440.0
+offset_top = 94.0
+offset_right = 501.0
+offset_bottom = 125.0
+text = "Return"
+
+[node name="details" type="Label" parent="."]
+offset_left = 621.0
+offset_top = 276.0
+offset_right = 1154.0
+offset_bottom = 559.0
+text = "The possible Actions are made up of a move_and_slide inside of an 
+action timer.  For example, the \"jump_right\" action is made up of a 
+0.2s jump plus a 0.8s move right. Etc. on the other three actions .  
+The jump portion is the equavalent to a double-jump.  
+
+Another timer is used to track the entire allowable 45 seconds, 
+and allows each Action to take about 4 seconds.  This code  is 
+most awkward, but works. Using the vector system requires
+changes in the layout of hte game board ... consider doing that. 
+
+The \"player\" class coordinates the Actions as the Agent runs the 
+saved policy from  the Q- function and Q-table in \"tutorial_tester\"."
+
+[node name="More" type="Button" parent="."]
+offset_left = 375.0
+offset_top = 147.0
+offset_right = 576.0
+offset_bottom = 178.0
+tooltip_text = "look below in the debug output for the table"
+text = "View the current Q-Table"
+
+[connection signal="pressed" from="Return" to="." method="_on_return_pressed"]
+[connection signal="pressed" from="More" to="." method="_on_more_pressed"]

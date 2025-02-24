@@ -1,0 +1,81 @@
+[gd_scene load_steps=6 format=3 uid="uid://blaghgm356qqu"]
+
+[ext_resource type="Script" path="res://level.gd" id="1_1oil2"]
+[ext_resource type="PackedScene" uid="uid://c8wmrh485xv7i" path="res://platform.tscn" id="1_rbgqf"]
+[ext_resource type="PackedScene" uid="uid://bsam6tvsivhq2" path="res://player.tscn" id="2_a4gyf"]
+[ext_resource type="PackedScene" uid="uid://lcc7de2cgfr2" path="res://collectible.tscn" id="3_7l7rg"]
+[ext_resource type="Script" path="res://dqn-agent/dqnAgent.gd" id="4_8lb2m"]
+
+[node name="level" type="Node2D"]
+script = ExtResource("1_1oil2")
+
+[node name="ground" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="ground"]
+position = Vector2(0, 576)
+scale = Vector2(1.07077, 0.805466)
+polygon = PackedVector2Array(0, 0, 1152, 0, 1152, 64, 0, 64)
+
+[node name="Polygon2D" type="Polygon2D" parent="ground"]
+position = Vector2(0, 576)
+scale = Vector2(1.0654, 0.879622)
+polygon = PackedVector2Array(0, 0, 1152, 0, 1152, 96, 0, 96)
+
+[node name="platform" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(192, 480)
+
+[node name="platform2" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(768, 416)
+
+[node name="platform3" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(352, 256)
+
+[node name="player" parent="." instance=ExtResource("2_a4gyf")]
+position = Vector2(64, 544)
+script = ExtResource("4_8lb2m")
+speed = 200.0
+gravity_multiplier = 2.0
+
+[node name="RayCast_Down" type="RayCast2D" parent="player"]
+target_position = Vector2(0, 150)
+
+[node name="RayCast_Up" type="RayCast2D" parent="player"]
+target_position = Vector2(0, -150)
+
+[node name="RayCast_Left" type="RayCast2D" parent="player"]
+target_position = Vector2(-150, 0)
+
+[node name="RayCast_Right" type="RayCast2D" parent="player"]
+target_position = Vector2(150, 0)
+
+[node name="RayCast_DownRight" type="RayCast2D" parent="player"]
+target_position = Vector2(128, 128)
+
+[node name="RayCast_DownLeft" type="RayCast2D" parent="player"]
+target_position = Vector2(-128, 128)
+
+[node name="RayCast_UpRight" type="RayCast2D" parent="player"]
+target_position = Vector2(128, -128)
+
+[node name="RayCast_UpLeft" type="RayCast2D" parent="player"]
+target_position = Vector2(-128, -128)
+
+[node name="collectible" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(922, 387)
+
+[node name="collectible2" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(544, 128)
+
+[node name="collectible3" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(352, 448)
+
+[node name="platform4" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(0, 256)
+rotation = 1.57079
+
+[node name="platform5" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(1280, 256)
+rotation = 1.57079
+
+[node name="collectible4" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(160, 544)
