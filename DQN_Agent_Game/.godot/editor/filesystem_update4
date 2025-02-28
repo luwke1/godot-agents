@@ -1,4 +1,0 @@
-res://intro.tscn
-res://main_game.tscn
-res://level.tscn
-res://dqn-agent/dqnAgent.gd

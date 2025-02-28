@@ -1,12 +1,11 @@
 [gd_scene load_steps=5 format=3 uid="uid://blaghgm356qqu"]
 
-[ext_resource type="Script" path="res://level.gd" id="1_1oil2"]
 [ext_resource type="PackedScene" uid="uid://c8wmrh485xv7i" path="res://platform.tscn" id="1_rbgqf"]
 [ext_resource type="PackedScene" uid="uid://bsam6tvsivhq2" path="res://player.tscn" id="2_a4gyf"]
 [ext_resource type="PackedScene" uid="uid://lcc7de2cgfr2" path="res://collectible.tscn" id="3_7l7rg"]
+[ext_resource type="Script" path="res://dqnAgent.gd" id="3_k7bge"]
 
 [node name="level" type="Node2D"]
-script = ExtResource("1_1oil2")
 
 [node name="ground" type="StaticBody2D" parent="."]
 
@@ -49,9 +48,10 @@ position = Vector2(64, -1152)
 [node name="platform11" parent="." instance=ExtResource("1_rbgqf")]
 position = Vector2(832, -1344)
 
-[node name="player" parent="." node_paths=PackedStringArray("currentLevel") instance=ExtResource("2_a4gyf")]
+[node name="player" parent="." instance=ExtResource("2_a4gyf")]
 position = Vector2(32, 544)
-currentLevel = NodePath("..")
+script = ExtResource("3_k7bge")
+gravity_multiplier = 2.0
 
 [node name="Camera2D" type="Camera2D" parent="player"]
 
