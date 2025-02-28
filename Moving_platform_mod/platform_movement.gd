@@ -1,6 +1,6 @@
 extends StaticBody2D
 
-var movement_speed = 700
+var movement_speed = 200
 var left_edge = 0
 var right_edge = 1152
 

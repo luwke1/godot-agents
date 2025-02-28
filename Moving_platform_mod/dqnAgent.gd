@@ -88,6 +88,8 @@ func _ready() -> void:
 var decision_interval := 0.2
 var decision_timer := 0.0
 var current_action := 0
+var top_height := 0
+var last_record_time := 0
 
 func _physics_process(delta):
 	# Update physics and timers
@@ -96,6 +98,7 @@ func _physics_process(delta):
 	episode_time += delta
 	
 	agent_position = position
+	top_height = position.y
 	coin_position = get_nearest_coin_position()
 	
 	time_since_last_jump += delta
@@ -115,9 +118,10 @@ func _physics_process(delta):
 			current_episode_reward += reward
 			
 			var done = false
-			if is_done():
+			if int(episode_time) % TIME_LIMIT == 0 and delta != 0 and int(episode_time) != last_record_time:
+				last_record_time = int(episode_time)
 				done = true
-				reward -= 10
+				#reward -= 10
 			
 			store_experience(previous_state, previous_action, reward, current_state, done)
 			
@@ -130,12 +134,15 @@ func _physics_process(delta):
 				print("Episode Reward:", current_episode_reward)
 				
 				episode_num += 1
-				append_episode_reward(episode_num, current_episode_reward, collected_count, epsilon, episode_time)
+				append_episode_reward(episode_num, top_height, epsilon, episode_time)
 				
 				current_episode_reward = 0
-				episode_time = 0
-				reset_agent()
-				reset_collectables()
+				top_height = 0
+				
+				if not done:
+					episode_time = 0
+					reset_agent()
+					reset_collectables()
 				return
 			
 			train_counter += 1
@@ -457,11 +464,11 @@ func load_agent():
 			epsilon = 0.1
 			print("Epsilon set to ", epsilon, " for exploitation.")
 
-func append_episode_reward(episode_number, ep_reward, num_collected, epsilon, ep_time):
+func append_episode_reward(episode_number, top_height, epsilon, ep_time):
 	if not FileAccess.file_exists(rewards_file_path):
 		var file = FileAccess.open(rewards_file_path, FileAccess.WRITE)
 		if file:
-			file.store_line("Episode,Reward,Collected,Epsilon,Time")
+			file.store_line("Episode,Top_Height,Epsilon,Time")
 			file.close()
 	
 	var file = FileAccess.open(rewards_file_path, FileAccess.READ_WRITE)
@@ -469,8 +476,7 @@ func append_episode_reward(episode_number, ep_reward, num_collected, epsilon, ep
 		file.seek_end()
 		file.store_line(
 			str(episode_number) + "," +
-			str(ep_reward) + "," +
-			str(num_collected) + "," +
+			str(top_height) + "," +
 			str(epsilon) + "," +
 			str(ep_time)
 		)
