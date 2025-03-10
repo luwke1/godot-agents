@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3 uid="uid://blaghgm356qqu"]
+
+[ext_resource type="Script" path="res://level.gd" id="1_1oil2"]
+[ext_resource type="PackedScene" uid="uid://c8wmrh485xv7i" path="res://platform.tscn" id="1_rbgqf"]
+[ext_resource type="PackedScene" uid="uid://lcc7de2cgfr2" path="res://collectible.tscn" id="3_7l7rg"]
+[ext_resource type="Script" path="res://player_factory.gd" id="6_fcpm2"]
+[ext_resource type="PackedScene" uid="uid://cug7u1wwtnxn7" path="res://human_player.tscn" id="7_tyl40"]
+
+[node name="level" type="Node2D"]
+script = ExtResource("1_1oil2")
+
+[node name="ground" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="ground"]
+position = Vector2(0, 576)
+scale = Vector2(1.07077, 0.805466)
+polygon = PackedVector2Array(0, 0, 1152, 0, 1152, 64, 0, 64)
+
+[node name="Polygon2D" type="Polygon2D" parent="ground"]
+position = Vector2(0, 576)
+scale = Vector2(1.0654, 0.879622)
+polygon = PackedVector2Array(0, 0, 1152, 0, 1152, 96, 0, 96)
+
+[node name="platform" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(192, 461)
+
+[node name="platform2" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(768, 416)
+
+[node name="platform3" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(352, 256)
+
+[node name="collectible" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(922, 387)
+
+[node name="collectible2" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(544, 128)
+
+[node name="collectible3" parent="." instance=ExtResource("3_7l7rg")]
+position = Vector2(352, 427)
+
+[node name="platform4" parent="." instance=ExtResource("1_rbgqf")]
+rotation = 1.57079
+scale = Vector2(1.88, 1)
+
+[node name="platform5" parent="." instance=ExtResource("1_rbgqf")]
+position = Vector2(1280, 1)
+rotation = 1.57079
+scale = Vector2(2, 1)
+
+[node name="PlayerFactory" type="Node2D" parent="."]
+script = ExtResource("6_fcpm2")
+human_player_scene = ExtResource("7_tyl40")

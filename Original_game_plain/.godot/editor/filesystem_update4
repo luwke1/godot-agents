@@ -1,0 +1,16 @@
+res://intro.tscn
+res://main_game.tscn
+res://level.tscn
+res://to_train_agent.tscn
+res://tutorial_tester.tscn
+res://q_tester.tscn
+res://human_player.tscn
+res://dqn_agent.tscn
+res://dqn_agent.gd
+res://Neural Network/NNET.gd
+res://level.gd
+res://player.gd
+res://to_train_agent.gd
+res://q_tester.gd
+res://tester_2.gd
+res://dqn_player.tscn

@@ -1,0 +1,72 @@
+[gd_scene load_steps=4 format=3 uid="uid://n1drq5dmjtbq"]
+
+[ext_resource type="Texture2D" uid="uid://f35hwrv242bb" path="res://Retina/character_squarePurple.png" id="1_h020e"]
+
+[sub_resource type="GDScript" id="GDScript_sjvlr"]
+script/source = "extends CharacterBody2D
+
+
+const SPEED = 300.0
+const JUMP_VELOCITY = -400.0
+
+
+func _physics_process(delta: float) -> void:
+	# Add the gravity.
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+
+	# Handle jump.
+	if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+	var direction := Input.get_axis(\"ui_left\", \"ui_right\")
+	if direction:
+		velocity.x = direction * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+
+	move_and_slide()
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ld5tu"]
+size = Vector2(42, 55)
+
+[node name="player" type="CharacterBody2D"]
+position = Vector2(64, 544)
+script = SubResource("GDScript_sjvlr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-6, 2.5)
+shape = SubResource("RectangleShape2D_ld5tu")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-6, 2.5)
+shape = SubResource("RectangleShape2D_ld5tu")
+
+[node name="GFX" type="Sprite2D" parent="."]
+position = Vector2(-6, 2)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_h020e")
+
+[node name="player_timer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[node name="agent_timer" type="Timer" parent="."]
+one_shot = true
+
+[node name="episode_timer" type="Timer" parent="."]
+
+[node name="action_timer" type="Timer" parent="."]
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="timeout" from="player_timer" to="." method="_on_player_timer_timeout"]
+[connection signal="timeout" from="agent_timer" to="." method="_on_agent_timer_timeout"]
+[connection signal="timeout" from="episode_timer" to="." method="_on_episode_timer_timeout"]
+[connection signal="timeout" from="action_timer" to="." method="_on_action_timer_timeout"]

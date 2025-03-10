@@ -1,0 +1,14 @@
+Node2D
+CharacterBody2D
+Label
+Button
+Node
+Timer
+Sprite2D
+Control
+AIController2D
+VBoxContainer
+TextureRect
+MarginContainer
+CanvasLayer
+Area2D
