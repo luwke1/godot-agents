@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://blaghgm356qqu"]
+[gd_scene load_steps=6 format=3 uid="uid://blaghgm356qqu"]
 
 [ext_resource type="PackedScene" uid="uid://c8wmrh485xv7i" path="res://platform.tscn" id="1_rbgqf"]
-[ext_resource type="PackedScene" uid="uid://bsam6tvsivhq2" path="res://player.tscn" id="2_a4gyf"]
 [ext_resource type="PackedScene" uid="uid://lcc7de2cgfr2" path="res://collectible.tscn" id="3_7l7rg"]
-[ext_resource type="Script" path="res://dqnAgent.gd" id="3_k7bge"]
+[ext_resource type="PackedScene" uid="uid://dkiacx8jmm35x" path="res://dqn_agent.tscn" id="4_0b4ue"]
+[ext_resource type="PackedScene" uid="uid://1bu4q3uxh85c" path="res://human_player.tscn" id="4_f2txt"]
+[ext_resource type="Script" uid="uid://b6flswoumt5q6" path="res://player_factory.gd" id="5_f2txt"]
 
 [node name="level" type="Node2D"]
 
@@ -48,37 +49,6 @@ position = Vector2(64, -1152)
 [node name="platform11" parent="." instance=ExtResource("1_rbgqf")]
 position = Vector2(832, -1344)
 
-[node name="player" parent="." instance=ExtResource("2_a4gyf")]
-position = Vector2(32, 544)
-script = ExtResource("3_k7bge")
-gravity_multiplier = 2.0
-
-[node name="Camera2D" type="Camera2D" parent="player"]
-
-[node name="RayCast_Down" type="RayCast2D" parent="player"]
-target_position = Vector2(0, 150)
-
-[node name="RayCast_Up" type="RayCast2D" parent="player"]
-target_position = Vector2(0, -150)
-
-[node name="RayCast_Left" type="RayCast2D" parent="player"]
-target_position = Vector2(-150, 0)
-
-[node name="RayCast_Right" type="RayCast2D" parent="player"]
-target_position = Vector2(150, 0)
-
-[node name="RayCast_DownRight" type="RayCast2D" parent="player"]
-target_position = Vector2(128, 128)
-
-[node name="RayCast_DownLeft" type="RayCast2D" parent="player"]
-target_position = Vector2(-128, 128)
-
-[node name="RayCast_UpRight" type="RayCast2D" parent="player"]
-target_position = Vector2(128, -128)
-
-[node name="RayCast_UpLeft" type="RayCast2D" parent="player"]
-target_position = Vector2(-128, -128)
-
 [node name="collectible" parent="." instance=ExtResource("3_7l7rg")]
 position = Vector2(576, -1408)
 
@@ -99,3 +69,8 @@ polygon = PackedVector2Array(0, 672, 0, -1792, -64, -1792, -64, 672)
 [node name="Polygon2D" type="Polygon2D" parent="Right Wall"]
 position = Vector2(1216, 0)
 polygon = PackedVector2Array(0, 672, 0, -1792, -64, -1792, -64, 672)
+
+[node name="PlayerFactory" type="Node2D" parent="."]
+script = ExtResource("5_f2txt")
+human_player_scene = ExtResource("4_f2txt")
+dqn_agent_scene = ExtResource("4_0b4ue")

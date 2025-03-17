@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c8wmrh485xv7i"]
 
-[ext_resource type="Script" path="res://platform_movement.gd" id="1_8edj0"]
+[ext_resource type="Script" uid="uid://b7vldalp3rr41" path="res://platform_movement.gd" id="1_8edj0"]
 
 [node name="platform" type="StaticBody2D" groups=["platform"]]
 script = ExtResource("1_8edj0")

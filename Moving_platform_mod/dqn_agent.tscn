@@ -1,0 +1,72 @@
+[gd_scene load_steps=4 format=3 uid="uid://dkiacx8jmm35x"]
+
+[ext_resource type="Script" uid="uid://skldr2itag52" path="res://dqnAgent.gd" id="1_234gx"]
+[ext_resource type="Texture2D" uid="uid://f35hwrv242bb" path="res://Retina/character_squarePurple.png" id="2_xol6s"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ld5tu"]
+size = Vector2(42, 55)
+
+[node name="player" type="CharacterBody2D"]
+position = Vector2(32, 544)
+script = ExtResource("1_234gx")
+speed = 400.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-6, 2.5)
+shape = SubResource("RectangleShape2D_ld5tu")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-6, 2.5)
+shape = SubResource("RectangleShape2D_ld5tu")
+
+[node name="GFX" type="Sprite2D" parent="."]
+position = Vector2(-6, 2)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_xol6s")
+
+[node name="player_timer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[node name="agent_timer" type="Timer" parent="."]
+one_shot = true
+
+[node name="episode_timer" type="Timer" parent="."]
+
+[node name="action_timer" type="Timer" parent="."]
+
+[node name="Camera2D2" type="Camera2D" parent="."]
+
+[node name="RayCast_Down2" type="RayCast2D" parent="."]
+target_position = Vector2(0, 150)
+
+[node name="RayCast_Up2" type="RayCast2D" parent="."]
+target_position = Vector2(0, -150)
+
+[node name="RayCast_Left2" type="RayCast2D" parent="."]
+target_position = Vector2(-150, 0)
+
+[node name="RayCast_Right2" type="RayCast2D" parent="."]
+target_position = Vector2(150, 0)
+
+[node name="RayCast_DownRight2" type="RayCast2D" parent="."]
+target_position = Vector2(128, 128)
+
+[node name="RayCast_DownLeft2" type="RayCast2D" parent="."]
+target_position = Vector2(-128, 128)
+
+[node name="RayCast_UpRight2" type="RayCast2D" parent="."]
+target_position = Vector2(128, -128)
+
+[node name="RayCast_UpLeft2" type="RayCast2D" parent="."]
+target_position = Vector2(-128, -128)
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="timeout" from="player_timer" to="." method="_on_player_timer_timeout"]
+[connection signal="timeout" from="agent_timer" to="." method="_on_agent_timer_timeout"]
+[connection signal="timeout" from="episode_timer" to="." method="_on_episode_timer_timeout"]
+[connection signal="timeout" from="action_timer" to="." method="_on_action_timer_timeout"]
