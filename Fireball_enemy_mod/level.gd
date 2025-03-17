@@ -7,3 +7,6 @@ func update_ui_score(value):
 	
 func show_lost_ui():
 	ui.show_lost()
+
+func get_ui_score():
+	return ui.get_score()

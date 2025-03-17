@@ -27,6 +27,9 @@ func show_lost():
 func update_score_label():
 	score_label.text = "Score:  " + str(score)
 	
+func get_score():
+	return score
+	
 func _on_button_pressed():
 	Globals.control_type = current_control_type 
 	get_tree().reload_current_scene()

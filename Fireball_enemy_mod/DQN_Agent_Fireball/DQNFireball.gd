@@ -51,6 +51,8 @@ var collected_count = 0
 var total_collectables = 0
 var collectables = []
 
+var enemy_positions = {}
+
 var time_since_last_coin_collection = 0.0
 var initial_position = Vector2()
 
@@ -65,6 +67,9 @@ func _ready() -> void:
 	level = get_parent()
 	initial_position = position
 	collectables = get_tree().get_nodes_in_group("collectable")
+	var enemies = get_tree().get_nodes_in_group("enemy")
+	for enemy in enemies:
+		enemy_positions[enemy.name] = enemy.position
 	total_collectables = collectables.size()
 	
 	# Configure Q-network and target network
@@ -88,6 +93,7 @@ func _ready() -> void:
 var decision_interval := 0.2
 var decision_timer := 0.0
 var current_action := 0
+var touched_enemy := false
 
 func _physics_process(delta):
 	# Update physics and timers
@@ -124,7 +130,7 @@ func _physics_process(delta):
 			previous_state = current_state
 			previous_distance = current_distance
 			
-			if done or collected_count == total_collectables and Globals.control_type != "agent":
+			if done or touched_enemy == true or collected_count == total_collectables and Globals.control_type != "agent":
 				epsilon = max(0.01, epsilon * 0.99)
 				print("Episode #", episode_num, " ended. Epsilon:", epsilon)
 				print("Episode Reward:", current_episode_reward)
@@ -135,6 +141,8 @@ func _physics_process(delta):
 				episode_time = 0
 				reset_agent()
 				reset_collectables()
+				reset_enemies()
+				touched_enemy = false
 				return
 			
 			train_counter += 1
@@ -183,6 +191,13 @@ func reset_collectables():
 	for collectable in collectables:
 		collectable.reset_position()
 	collected_count = 0
+	
+func reset_enemies():
+	var enemies = get_tree().get_nodes_in_group("enemy")
+	for enemy in enemies:
+		if enemy.name in enemy_positions:
+			enemy.position = enemy_positions[enemy.name]
+		
 
 # --------------------------------------------------------------------------------
 # State Representation
@@ -283,7 +298,7 @@ func get_nearest_coin_position() -> Vector2:
 	var min_dist = INF
 	
 	for child in collectables:
-		if child.is_active:
+		# if child.is_active:
 			var dist = (child.global_position - agent_position).length()
 			if dist < min_dist:
 				min_dist = dist
@@ -386,7 +401,7 @@ func train_dqn() -> void:
 # Handle Collecting a Coin
 # --------------------------------------------------------------------------------
 func _on_area_2d_body_entered(body):
-	if body.is_in_group("collectable") and body.is_active:
+	if body.is_in_group("collectable"): # and body.is_active:
 		collected_count += 1
 		var coin_value = body.value
 		level.update_ui_score(coin_value)
@@ -395,6 +410,8 @@ func _on_area_2d_body_entered(body):
 		# Immediately update coin position and previous_distance after collection
 		coin_position = get_nearest_coin_position()
 		previous_distance = (agent_position - coin_position).length()
+	if body.is_in_group("enemy"):
+		touched_enemy = true
 
 # --------------------------------------------------------------------------------
 # Save / Load Agent Functions

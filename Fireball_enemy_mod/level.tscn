@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://blaghgm356qqu"]
+[gd_scene load_steps=7 format=3 uid="uid://blaghgm356qqu"]
 
 [ext_resource type="Script" uid="uid://cb2wy17o15n2s" path="res://level.gd" id="1_1oil2"]
 [ext_resource type="PackedScene" uid="uid://c8wmrh485xv7i" path="res://platform.tscn" id="1_rbgqf"]
 [ext_resource type="PackedScene" uid="uid://bsam6tvsivhq2" path="res://player.tscn" id="2_a4gyf"]
 [ext_resource type="PackedScene" uid="uid://lcc7de2cgfr2" path="res://collectible.tscn" id="3_7l7rg"]
+[ext_resource type="Script" uid="uid://cfk2e50n868kw" path="res://DQN_Agent_Fireball/DQNFireball.gd" id="4_1ainy"]
 [ext_resource type="PackedScene" uid="uid://xgfhf0ut77uj" path="res://Fireball.tscn" id="5_e1rxj"]
 
 [node name="level" type="Node2D"]
@@ -33,7 +34,9 @@ position = Vector2(416, 192)
 
 [node name="player" parent="." instance=ExtResource("2_a4gyf")]
 position = Vector2(32, 544)
-script = null
+script = ExtResource("4_1ainy")
+speed = 200.0
+gravity_multiplier = 2.0
 
 [node name="collectible" parent="." instance=ExtResource("3_7l7rg")]
 position = Vector2(928, 352)
