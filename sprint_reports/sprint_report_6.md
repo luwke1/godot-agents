@@ -1,6 +1,6 @@
 # Sprint 6 Report (March 17 - April 10 2025)
 
-## YouTube link of Sprint 5 Video (Make this video unlisted)
+## YouTube link of Sprint 6 Video (Make this video unlisted)
 
 TBD
 
