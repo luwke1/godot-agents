@@ -32,13 +32,13 @@ Here are links to the issues that we completed in this sprint:
 
   story points Cole 37, Luke 37
   
-## videos for Review
+## Videos+Blogs for Review
 Please review the following videos, which were actively developed during this
 sprint, for quality:
-* [Setting Up DQN Agent Vision and Movement in Godot (Video 5)](https://www.youtube.com/watch?v=wrGIkUu75zY&t=363s&pp=0gcJCX4JAYcqIYzv)
-* [Setting Up Neural Network and State Representation for Godot DQN Agent (Video 6)](https://www.youtube.com/watch?v=0p6EXNPvRs0)
-* [Action Execution, Reward Calculation & Experience Replay](https://www.youtube.com/watch?v=hr6D6x1qDIU)
-* [Training the Agent & Integrating the Full Pipeline (Video 8)](https://www.youtube.com/watch?v=Zpg5f90bMKc&t=2s)
+* [Setting Up DQN Agent Vision and Movement in Godot (Video 5)](https://coleclark75.wixsite.com/learn-godot-rl/post/video-5-setting-up-dqn-agent-vision-and-movement-in-godot)
+* [Setting Up Neural Network and State Representation for Godot DQN Agent (Video 6)](https://coleclark75.wixsite.com/learn-godot-rl/post/video-6-setting-up-neural-network-and-state-representation-for-godot-dqn-agent)
+* [Action Execution, Reward Calculation & Experience Replay](https://coleclark75.wixsite.com/learn-godot-rl/post/action-execution-reward-calculation-experience-replay)
+* [Training the Agent & Integrating the Full Pipeline (Video 8)](https://coleclark75.wixsite.com/learn-godot-rl/post/training-the-agent-integrating-the-full-pipeline)
 
 
 ## Retrospective Summary
