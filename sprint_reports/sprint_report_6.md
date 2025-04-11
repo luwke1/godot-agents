@@ -5,7 +5,7 @@
 TBD
 
 ## Wix website and tutorial videos created during this sprint
-* https://coleclark75.wixsite.com/beginnerrml
+* https://coleclark75.wixsite.com/learn-godot-rl
 * https://www.youtube.com/@GodotAgents
 
 ## What's New (User Facing)
@@ -22,21 +22,27 @@ The final 4 videos were completed for our DQN learning tutorial series (8 videos
 
 ## Completed Issues/User Stories
 Here are links to the issues that we completed in this sprint:
-* 
+* [Project Poster](https://github.com/luwke1/godot-agents/issues/59)
+* [Complete Blog Posts For All Videos](https://github.com/luwke1/godot-agents/issues/71)
+* [Video 8: Training the Agent & Integrating the Full Pipeline](https://github.com/luwke1/godot-agents/issues/70)
+* [Video 7: Action Execution, Reward Calculation & Experience Replay](https://github.com/luwke1/godot-agents/issues/69)
+* [Video 6: Setting Up Neural Network and State Representation for Godot DQN Agent](https://github.com/luwke1/godot-agents/issues/68)
+* [Video 5: Setting Up DQN Agent Vision and Movement in Godot](https://github.com/luwke1/godot-agents/issues/67)
+* [Deploy Wix Site](https://github.com/luwke1/godot-agents/issues/72)
 
-  story points Cole 30, Luke 30
+  story points Cole 37, Luke 37
   
-## Code Files for Review
-Please review the following code files, which were actively developed during this
+## videos for Review
+Please review the following videos, which were actively developed during this
 sprint, for quality:
-* 
+* [Setting Up DQN Agent Vision and Movement in Godot (Video 5)](https://www.youtube.com/watch?v=wrGIkUu75zY&t=363s&pp=0gcJCX4JAYcqIYzv)
+* [Setting Up Neural Network and State Representation for Godot DQN Agent (Video 6)](https://www.youtube.com/watch?v=0p6EXNPvRs0)
+* [Action Execution, Reward Calculation & Experience Replay](https://www.youtube.com/watch?v=hr6D6x1qDIU)
+* [Training the Agent & Integrating the Full Pipeline (Video 8)](https://www.youtube.com/watch?v=Zpg5f90bMKc&t=2s)
+
 
 ## Retrospective Summary
 Here's what went well:
 * creating the videos
-
-Here's what we'd like to improve:
-* dqn agent performance on modified games
-
-Here are changes we plan to implement in the next sprint:
-* possibly add new agents and new methods of RL to our website
+* adding blog posts to videos
+* improving youtube descriptions
