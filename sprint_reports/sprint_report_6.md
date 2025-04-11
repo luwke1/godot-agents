@@ -2,7 +2,7 @@
 
 ## YouTube link of Sprint 6 Video (Make this video unlisted)
 
-TBD
+https://youtu.be/2s5m5UR4x4g
 
 ## Wix website and tutorial videos created during this sprint
 * https://coleclark75.wixsite.com/learn-godot-rl
