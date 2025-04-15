@@ -1189,7 +1189,6 @@ func set_batch_size(new_batch_size : int) -> void:
 
 func set_input(input : Array) -> void:
 	if input.size() != neurons_out[0].size():
-		print(input.size(), neurons_out[0].size())
 		push_error("Input size must match number of neurons on the first layer")
 		return
 	neurons_out[0] = input.duplicate()

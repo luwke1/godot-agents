@@ -5,7 +5,7 @@ class_name UI
 @onready var completed_ui = %GameCompleteUI
 @onready var current_control_type = Globals.control_type
 var score = 0
-var maxScore = 40
+var maxScore = 30
 
 func update_score(value):
 	score += value
